@@ -1,11 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Server", "Server\Server.csproj", "{4B1D7020-1990-4755-AC49-59ED1F22199A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dulo.Network", "Dulo.Network\Dulo.Network.csproj", "{586681AE-2C6A-474A-8237-A7E521B3B24D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Client", "Client\Client.csproj", "{1D3A7512-E29F-4A99-8A02-A992176FD254}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -21,6 +23,10 @@ Global
 		{586681AE-2C6A-474A-8237-A7E521B3B24D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{586681AE-2C6A-474A-8237-A7E521B3B24D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{586681AE-2C6A-474A-8237-A7E521B3B24D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1D3A7512-E29F-4A99-8A02-A992176FD254}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1D3A7512-E29F-4A99-8A02-A992176FD254}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1D3A7512-E29F-4A99-8A02-A992176FD254}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1D3A7512-E29F-4A99-8A02-A992176FD254}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

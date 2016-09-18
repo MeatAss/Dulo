@@ -44,7 +44,7 @@ namespace Dulo.Network
             
             if (model.Head == BaseHeaders.Ping)
             {
-                SendData<string>(BaseHeaders.Ping, "", ipEndPoint);//
+                SendData<string>(BaseHeaders.Ping, "", ipEndPoint);
             }
             
             ReciveMessage?.Invoke(message, ipEndPoint);

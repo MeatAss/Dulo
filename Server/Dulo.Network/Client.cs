@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using Dulo.Network.Models;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace Dulo.Network
 {
@@ -13,20 +14,36 @@ namespace Dulo.Network
     {
         public event Action OnConnectionSuccess;
         public event Action OnConnectionDenied;
+        public event Action OnConnectionLost;
+        public event Action OnPingChanged;
+
+        public int Ping { get; protected set; }
 
         private IPEndPoint serverIp;
-        private double ms;
+
+        private int ms;
+
+        private bool isConnectionFound = true;
+
+        private Recall recallPing;
 
         public Client() : base ()
         {
-            resiveData += ClientResiveData;
-            StartListening();
+            Initialize();
         }        
 
         public Client(int listenerPort) : base(listenerPort)
         {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
             resiveData += ClientResiveData;
             StartListening();
+
+            recallPing = new Recall();
+            recallPing.OnDied += ConnectionLost;
         }
 
         private void ClientResiveData(string message, IPEndPoint ipEndPoint)
@@ -40,8 +57,10 @@ namespace Dulo.Network
 
             if (model.Head == BaseHeaders.Ping)
             {
-                //
-                //
+                Ping = DateTime.Now.Millisecond - ms;
+                isConnectionFound = true;
+                recallPing.Stop();
+                OnPingChanged?.Invoke();
             }
 
             if (model.Head == BaseHeaders.ConnectionSuccess)
@@ -62,11 +81,32 @@ namespace Dulo.Network
             SendData<string>(BaseHeaders.Connect, "", serverIp);
         }
 
-        public void Ping()
+        public void UpdatePing()
         {
-            //
-            SendData<string>(BaseHeaders.Ping, "", serverIp);
+
+            if (!isConnectionFound)
+            {
+                return;
+            }
+
+            isConnectionFound = false;
+
+            recallPing = new Recall();
+            recallPing.OnDied += ConnectionLost;
+
+            recallPing.Start(SendPing);
             ms = DateTime.Now.Millisecond;
+        }
+
+        private void SendPing()
+        {
+            SendData<string>(BaseHeaders.Ping, "", serverIp);
+        }
+
+        private void ConnectionLost()
+        {
+            CloseConnection();
+            OnConnectionLost?.Invoke();
         }
     }
 }

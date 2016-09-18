@@ -77,5 +77,10 @@ namespace Dulo.Network
                 resiveData(results, remoteIPEndPoint);
         }
         #endregion
+
+        public void CloseConnection()
+        {
+            listener.Close();
+        }
     }
 }
