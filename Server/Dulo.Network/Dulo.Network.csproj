@@ -47,6 +47,9 @@
     <Compile Include="BaseClient.cs" />
     <Compile Include="Client.cs" />
     <Compile Include="BaseHeaders.cs" />
+    <Compile Include="ClientModel.cs" />
+    <Compile Include="DataResender.cs" />
+    <Compile Include="ExtensionDateTime.cs" />
     <Compile Include="Models\MessageTextModel.cs" />
     <Compile Include="Models\MessageModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

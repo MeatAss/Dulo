@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Net;
 using Newtonsoft.Json;
 using Dulo.Network.Models;
+using System.Threading;
 
 namespace Dulo.Network
 {
@@ -13,18 +14,26 @@ namespace Dulo.Network
     {
         public event ReciveMessage ReciveMessage;
 
-        protected List<IPEndPoint> clients = new List<IPEndPoint>();
+        public List<ClientModel> clients = new List<ClientModel>();
 
         public int MaxConnection { get; set; } = 10;
 
+        public int DeathTime = 20000;
+
         public Server() : base ()
         {
-            resiveData += ServerReciveData;
+            Initialize();
         }
 
         public Server(int listenerPort) : base(listenerPort)
         {
+            Initialize();
+        }
+
+        private void Initialize()
+        {
             resiveData += ServerReciveData;
+            Task.Factory.StartNew(StartCheckClientsLastTime);
         }
 
         private void ServerReciveData(string message, IPEndPoint ipEndPoint)
@@ -36,18 +45,29 @@ namespace Dulo.Network
         {
             var model = JsonConvert.DeserializeObject<MessageModel>(message);
 
+            if (model.Head == BaseHeaders.Ping)
+            {
+                SendData<string>(BaseHeaders.Ping, "", ipEndPoint);
+            }
+
             if (model.Head == BaseHeaders.Connect)
             {
                 СonnectionProcessing(ipEndPoint);
                 return;
             }
-            
-            if (model.Head == BaseHeaders.Ping)
-            {
-                SendData<string>(BaseHeaders.Ping, "", ipEndPoint);
-            }
-            
+
+            UpdateClientLastTime(ipEndPoint);
+
             ReciveMessage?.Invoke(message, ipEndPoint);
+        }
+
+        private void UpdateClientLastTime(IPEndPoint ipEndPoint)
+        {
+            Task.Factory.StartNew(() =>
+            {
+                var client = clients.FirstOrDefault((item) => item.ClientIp.Address.ToString() == ipEndPoint.Address.ToString());
+                client.UpdateTime();
+            });
         }
 
         private void СonnectionProcessing(IPEndPoint ipEndPoint)
@@ -69,7 +89,8 @@ namespace Dulo.Network
 
         private void ConnectionAccept(IPEndPoint ipEndPoint)
         {
-            clients.Add(ipEndPoint);
+            clients.Add(new ClientModel(ipEndPoint));
+            
             SendData<string>(BaseHeaders.ConnectionSuccess, "", ipEndPoint);
         }
 
@@ -78,6 +99,16 @@ namespace Dulo.Network
             SendData<string>(BaseHeaders.ConnectionDenied, "", ipEndPoint);
         }
 
-
+        private void StartCheckClientsLastTime()
+        {
+            while (true)
+            {
+                Thread.Sleep(1000);
+                var timeNow = DateTime.Now.ToMilliseconds();
+                clients.Where((item) => timeNow - item.ClientsLastMessageTime >= DeathTime)
+                    .ToList()
+                    .ForEach((itemDelete) => clients.Remove(itemDelete));                                
+            }
+        }
     }
 }

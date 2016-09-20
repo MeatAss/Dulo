@@ -11,7 +11,7 @@ namespace Dulo.Network
     {
         private Action sendMethod;
 
-        public event Action OnDied;
+        private event Action onDied;
 
         private Task task;
 
@@ -22,9 +22,19 @@ namespace Dulo.Network
 
         private bool IsStopped = false;
 
-        public void Start(Action sendMethod)
+        public Recall() { }
+
+        public Recall(int maxCallingDeathTime, int waitingTime)
+        {
+            MaxCallingDeathTime = maxCallingDeathTime;
+            WaitingTime = waitingTime;
+        }
+
+        public void Start(Action sendMethod, Action onDied)
         {
             this.sendMethod = sendMethod;
+            this.onDied = onDied;
+
             task = new Task(CheckRecall);
 
             sendMethod();
@@ -62,7 +72,7 @@ namespace Dulo.Network
         private void Die()
         {
             Zeroing();
-            OnDied?.Invoke();
+            onDied.Invoke();
         }
 
         public void Stop()
