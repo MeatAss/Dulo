@@ -5,7 +5,6 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Net;
 using Dulo.Network.Models;
-using Newtonsoft.Json;
 using System.Threading;
 
 namespace Dulo.Network
@@ -26,6 +25,8 @@ namespace Dulo.Network
         private DataResender resenderPing;
         private DataResender resenderConnect;
 
+        private HeadChecker headChecker;
+
         public Client() : base ()
         {
             Initialize();
@@ -44,6 +45,19 @@ namespace Dulo.Network
             resenderPing = new DataResender(ConnectionLost);
 
             resenderConnect = new DataResender(() => OnConnectionDenied(), 5, 1000);
+
+            InitializeHeadChecker();
+        }
+
+        private void InitializeHeadChecker()
+        {
+            headChecker = new HeadChecker();
+
+            headChecker.Add(BaseHeaders.Ping, HeadCheckerMessagePing);
+
+            headChecker.Add(BaseHeaders.ConnectionSuccess, HeadCheckerMessageConnectionSuccess);
+
+            headChecker.Add(BaseHeaders.ConnectionDenied, HeadCheckerMessageConnectionDenied);
         }
 
         private void ClientResiveData(string message, IPEndPoint ipEndPoint)
@@ -53,27 +67,9 @@ namespace Dulo.Network
 
         private void DataRoute(string message, IPEndPoint ipEndPoint)
         {
-            var model = JsonConvert.DeserializeObject<MessageModel>(message);
+            var model = JsonTransformer.DeserializeObject<MessageModel>(message);
 
-            if (model.Head == BaseHeaders.Ping)
-            {
-                Ping = DateTime.Now.ToMilliseconds() - ms;
-                resenderPing.Stop();
-                OnPingChanged?.Invoke();
-            }
-
-            if (model.Head == BaseHeaders.ConnectionSuccess)
-            {
-                resenderConnect.Stop();
-                OnConnectionSuccess?.Invoke();
-            }
-
-            if (model.Head == BaseHeaders.ConnectionDenied)
-            {
-                resenderConnect.Stop();                
-                serverIp = null;
-                OnConnectionDenied?.Invoke();
-            }            
+            headChecker.Check(model, null);      
         }
 
         public void Connect(IPEndPoint serverIp)
@@ -106,8 +102,32 @@ namespace Dulo.Network
 
         private void ConnectionLost()
         {
-            CloseConnection();
             OnConnectionLost?.Invoke();
         }
+
+
+        #region HeadCheckerMethods
+
+        private void HeadCheckerMessagePing(MessageModel model, object arg)
+        {
+            Ping = DateTime.Now.ToMilliseconds() - ms;
+            resenderPing.Stop();
+            OnPingChanged?.Invoke();
+        }
+
+        private void HeadCheckerMessageConnectionSuccess(MessageModel model, object arg)
+        {
+            resenderConnect.Stop();
+            OnConnectionSuccess?.Invoke();
+        }
+
+        private void HeadCheckerMessageConnectionDenied(MessageModel model, object arg)
+        {
+            resenderConnect.Stop();
+            serverIp = null;
+            OnConnectionDenied?.Invoke();
+        }        
+
+        #endregion
     }
 }

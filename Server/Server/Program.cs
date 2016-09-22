@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Dulo.Network;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
 
 namespace Server
 {
@@ -27,6 +28,7 @@ namespace Server
         {
             while (true)
             {
+                Thread.Sleep(1000);
                 Console.Title = Convert.ToString(server.clients.Count);
             }
         }

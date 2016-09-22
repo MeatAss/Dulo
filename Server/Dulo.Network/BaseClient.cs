@@ -6,7 +6,6 @@ using System.Threading.Tasks;
 using System.Net.Sockets;
 using System.Net;
 using Dulo.Network.Models;
-using Newtonsoft.Json;
 
 namespace Dulo.Network
 {
@@ -33,10 +32,10 @@ namespace Dulo.Network
             var response = new MessageModel
             {
                 Head = head,
-                Body = JsonConvert.SerializeObject(body)
+                Body = JsonTransformer.SerializeObject<T>(body)
             };
 
-            Send(JsonConvert.SerializeObject(response), ipEndPoint);
+            Send(JsonTransformer.SerializeObject<MessageModel>(response), ipEndPoint);
         }
 
         public void Send(string message, IPEndPoint ipEndPoint)
@@ -72,9 +71,8 @@ namespace Dulo.Network
 
             int test = remoteIPEndPoint.Port;
             string results = Encoding.UTF8.GetString(bytes);
-
-            if (resiveData != null)
-                resiveData(results, remoteIPEndPoint);
+            
+            resiveData?.Invoke(results, remoteIPEndPoint);
         }
         #endregion
 

@@ -18,10 +18,10 @@ namespace Client
             client = new Dulo.Network.Client(5001);
 
             Console.WriteLine("write ip: ");
-            string ip = "192.168.170.3";
-            //string ip = Console.ReadLine();
+            //string ip = "25.99.35.165";
+            string ip = Console.ReadLine();
 
-            client.Connect(new System.Net.IPEndPoint(IPAddress.Parse(ip), 5002));
+            client.Connect(new IPEndPoint(IPAddress.Parse(ip), 5002));
 
             client.OnConnectionSuccess += Client_OnConnectionSuccess;
             client.OnConnectionDenied += Client_OnConnectionDenied;

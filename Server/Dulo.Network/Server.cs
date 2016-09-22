@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Net;
-using Newtonsoft.Json;
 using Dulo.Network.Models;
 using System.Threading;
 
@@ -18,7 +17,9 @@ namespace Dulo.Network
 
         public int MaxConnection { get; set; } = 10;
 
-        public int DeathTime = 20000;
+        public int DeathTime = 10000;
+
+        private HeadChecker headChecker;
 
         public Server() : base ()
         {
@@ -34,6 +35,16 @@ namespace Dulo.Network
         {
             resiveData += ServerReciveData;
             Task.Factory.StartNew(StartCheckClientsLastTime);
+            InitializeHeadChecker();
+        }
+
+        private void InitializeHeadChecker()
+        {
+            headChecker = new HeadChecker();
+
+            headChecker.Add(BaseHeaders.Ping, HeadCheckerMessagePing);
+
+            headChecker.Add(BaseHeaders.Connect, HeadCheckerMessageConnect);
         }
 
         private void ServerReciveData(string message, IPEndPoint ipEndPoint)
@@ -43,20 +54,15 @@ namespace Dulo.Network
 
         private void DataRoute(string message, IPEndPoint ipEndPoint)
         {
-            var model = JsonConvert.DeserializeObject<MessageModel>(message);
+            MessageModel model = JsonTransformer.DeserializeObject<MessageModel>(message);
 
-            if (model.Head == BaseHeaders.Ping)
-            {
-                SendData<string>(BaseHeaders.Ping, "", ipEndPoint);
-            }
-
-            if (model.Head == BaseHeaders.Connect)
-            {
-                СonnectionProcessing(ipEndPoint);
+            if (model == null)
                 return;
-            }
 
             UpdateClientLastTime(ipEndPoint);
+
+            if (headChecker.Check(model, ipEndPoint))
+                return;
 
             ReciveMessage?.Invoke(message, ipEndPoint);
         }
@@ -110,5 +116,23 @@ namespace Dulo.Network
                     .ForEach((itemDelete) => clients.Remove(itemDelete));                                
             }
         }
+
+        #region HeadCheckerMethods
+
+        private void HeadCheckerMessageConnect(MessageModel model, object ipEndPoint)
+        {
+            var client = clients.FirstOrDefault((item) => item.ClientIp.Equals((IPEndPoint)ipEndPoint));
+            if (clients != null)
+                clients.Remove(client);
+
+            СonnectionProcessing((IPEndPoint)ipEndPoint);
+        }
+
+        private void HeadCheckerMessagePing(MessageModel model, object ipEndPoint)
+        {
+            SendData<string>(BaseHeaders.Ping, "", (IPEndPoint)ipEndPoint);
+        }
+
+        #endregion
     }
 }
