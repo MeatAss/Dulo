@@ -27,6 +27,8 @@ namespace Dulo.Network
 
         private HeadChecker headChecker;
 
+        public event ReciveData ReciveData;
+
         public Client() : base ()
         {
             Initialize();
@@ -45,6 +47,8 @@ namespace Dulo.Network
             resenderPing = new DataResender(ConnectionLost);
 
             resenderConnect = new DataResender(() => OnConnectionDenied(), 5, 1000);
+
+            StartListening();
 
             InitializeHeadChecker();
         }
@@ -69,7 +73,9 @@ namespace Dulo.Network
         {
             var model = JsonTransformer.DeserializeObject<MessageModel>(message);
 
-            headChecker.Check(model, null);      
+            headChecker.Check(model, null);
+
+            ReciveData?.Invoke(model, ipEndPoint);
         }
 
         public void Connect(IPEndPoint serverIp)
@@ -77,6 +83,11 @@ namespace Dulo.Network
             this.serverIp = serverIp;
 
             resenderConnect.Start(SendConnect);
+        }
+
+        public void Connect(string ipAddress, int port)
+        {
+            Connect(new IPEndPoint(IPAddress.Parse(ipAddress), port));
         }
 
         private void SendConnect()
@@ -104,7 +115,6 @@ namespace Dulo.Network
         {
             OnConnectionLost?.Invoke();
         }
-
 
         #region HeadCheckerMethods
 
