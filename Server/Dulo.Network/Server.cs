@@ -100,12 +100,17 @@ namespace Dulo.Network
             return clients.Count() < MaxConnection;
         }
 
+        public void SendDataToClients<T>(byte head, T body) where T : class
+        {
+            clients.ForEach((item) => SendData<T>(head, body, item.ClientIp));
+        }
+
         private void ConnectionAccept(IPEndPoint ipEndPoint)
         {
             clients.Add(new ClientModel(ipEndPoint));
 
             OnClientConnect?.Invoke(ipEndPoint);
-
+            
             SendData<string>(BaseHeaders.ConnectionSuccess, "", ipEndPoint);
         }
 
