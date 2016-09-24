@@ -27,6 +27,8 @@ namespace Dulo.Network
 
         private HeadChecker headChecker;
 
+        public event ReciveMessage ReciveMessage;
+
         public Client() : base ()
         {
             Initialize();
@@ -69,7 +71,10 @@ namespace Dulo.Network
         {
             var model = JsonTransformer.DeserializeObject<MessageModel>(message);
 
-            headChecker.Check(model, null);      
+            if (headChecker.Check(model, null))
+                return;
+
+            ReciveMessage?.Invoke(message, ipEndPoint);
         }
 
         public void Connect(IPEndPoint serverIp)
