@@ -49,6 +49,8 @@ namespace Dulo.Network
         {
             headChecker = new HeadChecker();
 
+            headChecker.Add(BaseHeaders.Ping, HeadCheckerMessagePing);
+
             headChecker.Add(BaseHeaders.Connect, HeadCheckerMessageConnect);
         }
 
@@ -63,7 +65,6 @@ namespace Dulo.Network
 
             if (model == null)
             {
-                HeadCheckerMessagePing(ipEndPoint);
                 return;
             }
 
@@ -166,9 +167,9 @@ namespace Dulo.Network
             
         }
 
-        private void HeadCheckerMessagePing(object ipEndPoint)
+        private void HeadCheckerMessagePing(MessageModel model, object ipEndPoint)
         {
-            Send("", (IPEndPoint)ipEndPoint);
+            SendData<string>(BaseHeaders.Ping, "", (IPEndPoint)ipEndPoint);
         }
 
         #endregion

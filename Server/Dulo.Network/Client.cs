@@ -56,7 +56,9 @@ namespace Dulo.Network
 
         private void InitializeHeadChecker()
         {
-            headChecker = new HeadChecker();            
+            headChecker = new HeadChecker();
+
+            headChecker.Add(BaseHeaders.Ping, HeadCheckerMessagePing);
 
             headChecker.Add(BaseHeaders.ConnectionSuccess, HeadCheckerMessageConnectionSuccess);
 
@@ -74,12 +76,10 @@ namespace Dulo.Network
 
             if (model == null)
             {
-                HeadCheckerMessagePing(ipEndPoint);
                 return;
             }
 
-            if (headChecker.Check(model, null))
-                return;
+            headChecker.Check(model, null);
 
             ReciveData?.Invoke(model, ipEndPoint);
         }
@@ -114,7 +114,7 @@ namespace Dulo.Network
 
         private void SendPing()
         {
-            Send("", serverIP);
+            SendData<string>(BaseHeaders.Ping, "", serverIP);
         }
 
         private void ConnectionLost()
@@ -124,7 +124,7 @@ namespace Dulo.Network
 
         #region HeadCheckerMethods
 
-        private void HeadCheckerMessagePing(object arg)
+        private void HeadCheckerMessagePing(MessageModel model, object arg)
         {
             Ping = DateTime.Now.ToMilliseconds() - ms;
             resenderPing.Stop();
@@ -134,7 +134,6 @@ namespace Dulo.Network
         private void HeadCheckerMessageConnectionSuccess(MessageModel model, object arg)
         {
             resenderConnect.Stop();
-            UpdatePing();
             OnConnectionSuccess?.Invoke();
         }
 
