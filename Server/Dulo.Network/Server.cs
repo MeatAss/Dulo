@@ -9,11 +9,16 @@ using System.Threading;
 
 namespace Dulo.Network
 {
+    public delegate void ClientStateChange(IPEndPoint ipEndPoint);
+
     public class Server : BaseClient
     {
-        public event ReciveMessage ReciveMessage;
+        public event ReciveData ReciveData;
 
-        public List<ClientModel> clients = new List<ClientModel>();
+        protected List<ClientModel> clients = new List<ClientModel>();
+
+        public event ClientStateChange OnClientConnect;
+        public event ClientStateChange OnClientDiconnect;
 
         public int MaxConnection { get; set; } = 10;
 
@@ -36,13 +41,13 @@ namespace Dulo.Network
             resiveData += ServerReciveData;
             Task.Factory.StartNew(StartCheckClientsLastTime);
             InitializeHeadChecker();
+
+            StartListening();
         }
 
         private void InitializeHeadChecker()
         {
             headChecker = new HeadChecker();
-
-            headChecker.Add(BaseHeaders.Ping, HeadCheckerMessagePing);
 
             headChecker.Add(BaseHeaders.Connect, HeadCheckerMessageConnect);
         }
@@ -57,14 +62,17 @@ namespace Dulo.Network
             MessageModel model = JsonTransformer.DeserializeObject<MessageModel>(message);
 
             if (model == null)
+            {
+                HeadCheckerMessagePing(ipEndPoint);
                 return;
+            }
 
             UpdateClientLastTime(ipEndPoint);
 
             if (headChecker.Check(model, ipEndPoint))
                 return;
 
-            ReciveMessage?.Invoke(message, ipEndPoint);
+            ReciveData?.Invoke(model, ipEndPoint);
         }
 
         private void UpdateClientLastTime(IPEndPoint ipEndPoint)
@@ -93,9 +101,16 @@ namespace Dulo.Network
             return clients.Count() < MaxConnection;
         }
 
+        public void SendDataToClients<T>(byte head, T body) where T : class
+        {
+            clients.ForEach((item) => SendData<T>(head, body, item.ClientIp));
+        }
+
         private void ConnectionAccept(IPEndPoint ipEndPoint)
         {
             clients.Add(new ClientModel(ipEndPoint));
+
+            OnClientConnect?.Invoke(ipEndPoint);
             
             SendData<string>(BaseHeaders.ConnectionSuccess, "", ipEndPoint);
         }
@@ -113,8 +128,30 @@ namespace Dulo.Network
                 var timeNow = DateTime.Now.ToMilliseconds();
                 clients.Where((item) => timeNow - item.ClientsLastMessageTime >= DeathTime)
                     .ToList()
-                    .ForEach((itemDelete) => clients.Remove(itemDelete));                                
+                    .ForEach((itemDelete) =>
+                    {
+                        clients.Remove(itemDelete);
+                        OnClientDiconnect?.Invoke(itemDelete.ClientIp);
+                    });
             }
+        }
+
+        public IPEndPoint GetClientIP(int index)
+        {
+            if (index < 0 || index >= clients.Count)
+                return null;
+                        
+            return clients[index].ClientIp.Clone();
+        }
+
+        public IEnumerable<IPEndPoint> GetClientsIP()
+        {
+            return clients.Select((x) => x.ClientIp.Clone());
+        }
+
+        public int GetClientsCount()
+        {
+            return clients.Count;
         }
 
         #region HeadCheckerMethods
@@ -126,11 +163,12 @@ namespace Dulo.Network
                 clients.Remove(client);
 
             СonnectionProcessing((IPEndPoint)ipEndPoint);
+            
         }
 
-        private void HeadCheckerMessagePing(MessageModel model, object ipEndPoint)
+        private void HeadCheckerMessagePing(object ipEndPoint)
         {
-            SendData<string>(BaseHeaders.Ping, "", (IPEndPoint)ipEndPoint);
+            Send("", (IPEndPoint)ipEndPoint);
         }
 
         #endregion

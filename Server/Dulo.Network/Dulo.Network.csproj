@@ -48,6 +48,7 @@
     <Compile Include="Client.cs" />
     <Compile Include="BaseHeaders.cs" />
     <Compile Include="ClientModel.cs" />
+    <Compile Include="ExtensionIPEndPoint.cs" />
     <Compile Include="JsonTransformer.cs" />
     <Compile Include="DataResender.cs" />
     <Compile Include="ExtensionDateTime.cs" />

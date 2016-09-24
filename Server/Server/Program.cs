@@ -17,7 +17,6 @@ namespace Server
         static void Main(string[] args)
         {            
             server.MaxConnection = 5;
-            server.StartListening();
 
             Task.Factory.StartNew(TaskCount);
 
@@ -29,7 +28,7 @@ namespace Server
             while (true)
             {
                 Thread.Sleep(1000);
-                Console.Title = Convert.ToString(server.clients.Count);
+                Console.Title = Convert.ToString(server.GetClientsCount());
             }
         }
     }

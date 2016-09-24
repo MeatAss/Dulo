@@ -10,6 +10,7 @@ using Dulo.Network.Models;
 namespace Dulo.Network
 {
     public delegate void ReciveMessage(string message, IPEndPoint ipEndPoint);
+    public delegate void ReciveData(MessageModel model, IPEndPoint ipEndPoint);
 
     public abstract class BaseClient
     {
@@ -38,7 +39,7 @@ namespace Dulo.Network
             Send(JsonTransformer.SerializeObject<MessageModel>(response), ipEndPoint);
         }
 
-        public void Send(string message, IPEndPoint ipEndPoint)
+        protected void Send(string message, IPEndPoint ipEndPoint)
         {
             byte[] bytes = Encoding.UTF8.GetBytes(message);
             listener.Send(bytes, bytes.Length, ipEndPoint);
@@ -51,7 +52,7 @@ namespace Dulo.Network
 
         #region Listener
 
-        public void StartListening()
+        protected void StartListening()
         {
             Task.Factory.StartNew(ListenerBody);
         }
@@ -68,8 +69,7 @@ namespace Dulo.Network
         {
             IPEndPoint remoteIPEndPoint = new IPEndPoint(IPAddress.Any, 0); 
             byte[] bytes = listener.Receive(ref remoteIPEndPoint);
-
-            int test = remoteIPEndPoint.Port;
+            
             string results = Encoding.UTF8.GetString(bytes);
             
             resiveData?.Invoke(results, remoteIPEndPoint);

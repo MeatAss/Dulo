@@ -18,7 +18,8 @@ namespace Dulo.Network
 
         public long Ping { get; protected set; }
 
-        private IPEndPoint serverIp;
+        protected IPEndPoint serverIP;
+        public IPEndPoint ServerIP { get { return serverIP.Clone(); } }
 
         private long ms;
         
@@ -27,7 +28,7 @@ namespace Dulo.Network
 
         private HeadChecker headChecker;
 
-        public event ReciveMessage ReciveMessage;
+        public event ReciveData ReciveData;
 
         public Client() : base ()
         {
@@ -48,14 +49,14 @@ namespace Dulo.Network
 
             resenderConnect = new DataResender(() => OnConnectionDenied(), 5, 1000);
 
+            StartListening();
+
             InitializeHeadChecker();
         }
 
         private void InitializeHeadChecker()
         {
-            headChecker = new HeadChecker();
-
-            headChecker.Add(BaseHeaders.Ping, HeadCheckerMessagePing);
+            headChecker = new HeadChecker();            
 
             headChecker.Add(BaseHeaders.ConnectionSuccess, HeadCheckerMessageConnectionSuccess);
 
@@ -71,22 +72,33 @@ namespace Dulo.Network
         {
             var model = JsonTransformer.DeserializeObject<MessageModel>(message);
 
+            if (model == null)
+            {
+                HeadCheckerMessagePing(ipEndPoint);
+                return;
+            }
+
             if (headChecker.Check(model, null))
                 return;
 
-            ReciveMessage?.Invoke(message, ipEndPoint);
+            ReciveData?.Invoke(model, ipEndPoint);
         }
 
         public void Connect(IPEndPoint serverIp)
         {
-            this.serverIp = serverIp;
+            this.serverIP = serverIp;
 
             resenderConnect.Start(SendConnect);
         }
 
+        public void Connect(string ipAddress, int port)
+        {
+            Connect(new IPEndPoint(IPAddress.Parse(ipAddress), port));
+        }
+
         private void SendConnect()
         {
-            SendData<string>(BaseHeaders.Connect, "", serverIp);
+            SendData<string>(BaseHeaders.Connect, "", serverIP);
         }
 
         public void UpdatePing()
@@ -102,7 +114,7 @@ namespace Dulo.Network
 
         private void SendPing()
         {
-            SendData<string>(BaseHeaders.Ping, "", serverIp);
+            Send("", serverIP);
         }
 
         private void ConnectionLost()
@@ -110,10 +122,9 @@ namespace Dulo.Network
             OnConnectionLost?.Invoke();
         }
 
-
         #region HeadCheckerMethods
 
-        private void HeadCheckerMessagePing(MessageModel model, object arg)
+        private void HeadCheckerMessagePing(object arg)
         {
             Ping = DateTime.Now.ToMilliseconds() - ms;
             resenderPing.Stop();
@@ -123,16 +134,22 @@ namespace Dulo.Network
         private void HeadCheckerMessageConnectionSuccess(MessageModel model, object arg)
         {
             resenderConnect.Stop();
+            UpdatePing();
             OnConnectionSuccess?.Invoke();
         }
 
         private void HeadCheckerMessageConnectionDenied(MessageModel model, object arg)
         {
             resenderConnect.Stop();
-            serverIp = null;
+            serverIP = null;
             OnConnectionDenied?.Invoke();
         }        
 
         #endregion
+
+        public void SendDataToServer<T>(byte head, T body) where T : class
+        {
+            SendData<T>(head, body, serverIP);
+        }
     }
 }

@@ -52,9 +52,7 @@ namespace Client
 
         private static void Client_OnConnectionSuccess()
         {
-            Console.WriteLine("Connected!");
-
-            client.UpdatePing();
+            Console.WriteLine("Connected!");            
         }
     }
 }
