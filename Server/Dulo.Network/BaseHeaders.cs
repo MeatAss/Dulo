@@ -37,19 +37,11 @@ namespace Dulo.Network
             }
         }
 
-        public static byte Ping
-        {
-            get
-            {
-                return 3;
-            }
-        }
-
         public static byte Message
         {
             get
             {
-                return 4;
+                return 3;
             }
         }        
     }

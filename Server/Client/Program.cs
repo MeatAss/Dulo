@@ -18,7 +18,6 @@ namespace Client
             client = new Dulo.Network.Client(5001);
 
             Console.WriteLine("write ip: ");
-            //string ip = "25.99.35.165";
             string ip = Console.ReadLine();
 
             client.Connect(new IPEndPoint(IPAddress.Parse(ip), 5002));

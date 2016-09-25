@@ -43,7 +43,6 @@ namespace Dulo.Network
         private void Initialize()
         {
             resiveData += ClientResiveData;
-            StartListening();
 
             resenderPing = new DataResender(ConnectionLost);
 
@@ -57,8 +56,6 @@ namespace Dulo.Network
         private void InitializeHeadChecker()
         {
             headChecker = new HeadChecker();
-
-            headChecker.Add(BaseHeaders.Ping, HeadCheckerMessagePing);
 
             headChecker.Add(BaseHeaders.ConnectionSuccess, HeadCheckerMessageConnectionSuccess);
 
@@ -76,6 +73,7 @@ namespace Dulo.Network
 
             if (model == null)
             {
+                HeadCheckerMessagePing(model, ipEndPoint);
                 return;
             }
 
@@ -84,11 +82,11 @@ namespace Dulo.Network
             ReciveData?.Invoke(model, ipEndPoint);
         }
 
-        public void Connect(IPEndPoint serverIp)
+        public void Connect(IPEndPoint serverIP)
         {
-            this.serverIP = serverIp;
+            this.serverIP = serverIP;
 
-            resenderConnect.Start(SendConnect);
+            resenderConnect.Start(SendConnect);            
         }
 
         public void Connect(string ipAddress, int port)
@@ -114,7 +112,7 @@ namespace Dulo.Network
 
         private void SendPing()
         {
-            SendData<string>(BaseHeaders.Ping, "", serverIP);
+            Send("", serverIP);
         }
 
         private void ConnectionLost()

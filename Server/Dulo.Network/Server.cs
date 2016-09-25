@@ -49,8 +49,6 @@ namespace Dulo.Network
         {
             headChecker = new HeadChecker();
 
-            headChecker.Add(BaseHeaders.Ping, HeadCheckerMessagePing);
-
             headChecker.Add(BaseHeaders.Connect, HeadCheckerMessageConnect);
         }
 
@@ -63,12 +61,14 @@ namespace Dulo.Network
         {
             MessageModel model = JsonTransformer.DeserializeObject<MessageModel>(message);
 
+            UpdateClientLastTime(ipEndPoint);
+
             if (model == null)
             {
+                HeadCheckerMessagePing(model, ipEndPoint);
+                UpdateClientLastTime(ipEndPoint);
                 return;
             }
-
-            UpdateClientLastTime(ipEndPoint);
 
             if (headChecker.Check(model, ipEndPoint))
                 return;
@@ -81,7 +81,7 @@ namespace Dulo.Network
             Task.Factory.StartNew(() =>
             {
                 var client = clients.FirstOrDefault((item) => item.ClientIp.Address.ToString() == ipEndPoint.Address.ToString());
-                client.UpdateTime();
+                client?.UpdateTime();
             });
         }
 
@@ -164,12 +164,11 @@ namespace Dulo.Network
                 clients.Remove(client);
 
             СonnectionProcessing((IPEndPoint)ipEndPoint);
-            
         }
 
         private void HeadCheckerMessagePing(MessageModel model, object ipEndPoint)
         {
-            SendData<string>(BaseHeaders.Ping, "", (IPEndPoint)ipEndPoint);
+            Send("", (IPEndPoint)ipEndPoint);
         }
 
         #endregion
