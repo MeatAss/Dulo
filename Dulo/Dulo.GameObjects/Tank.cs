@@ -33,6 +33,7 @@ namespace Dulo.GameObjects
                 speedMoving = value < 0 ? 0 : value;
             }
         }
+
         public float SpeedRotating
         {
             get

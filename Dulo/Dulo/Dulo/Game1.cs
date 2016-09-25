@@ -63,6 +63,9 @@ namespace Dulo
 
             tankLexa.SpeedMoving = 3f;
             tankLexa.SpeedRotating = 0.03f;
+
+
+            
         }
 
         protected override void UnloadContent()
