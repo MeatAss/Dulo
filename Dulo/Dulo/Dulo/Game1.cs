@@ -8,8 +8,8 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
-using Dulo.Models;
-using Dulo.Dulo.Action;
+using Dulo.GameObjects;
+using Dulo.BaseModels;
 
 namespace Dulo
 {
@@ -18,46 +18,51 @@ namespace Dulo
     {
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
-        KeyboardState keysState;
 
         Tank tankLexa;
-        KeyMap firstPlayerKeys;
-        Texture2D a;
 
         public Game1()
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            
-            
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = 600;
+            IsMouseVisible = true;            
         }
 
         protected override void Initialize()
-        {        
-            firstPlayerKeys = new KeyMap() { Down = Keys.S, Fire = Keys.F, Left = Keys.A, Right = Keys.D, Up = Keys.W };
-
-            tankLexa = new Tank(Content.Load<Texture2D>("tank"), new Vector2(30, 20), new Vector2(100, 100), Content.Load<Texture2D>("tank"));
-            a = Content.Load<Texture2D>("tank");
-
+        {
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
             spriteBatch = new SpriteBatch(GraphicsDevice);
+
+            tankLexa = new Tank();
+
+            Animation animationTankBody = new Animation();
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("1"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("2"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("3"));
+            animationTankBody.IsCyclicAnimation = true;
+            animationTankBody.AnimationSpeed = 100;
+
+            tankLexa.AddNewAnimation(animationTankBody, "gogogo");
+            tankLexa.ChangeAnimation("gogogo");
+            tankLexa.AnimationPlay();
         }
 
         protected override void UnloadContent()
         {
+
         }
 
         
         protected override void Update(GameTime gameTime)
         {
-            if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed)
-                this.Exit();
-
             tankLexa.Update();
+
             base.Update(gameTime);
         }
 
@@ -65,9 +70,11 @@ namespace Dulo
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
+
             spriteBatch.Begin();
-            spriteBatch.Draw(a, new Vector2(100, 100), Color.White);
+            tankLexa.Render(spriteBatch);
             spriteBatch.End();
+
             base.Draw(gameTime);
         }
     }

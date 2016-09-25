@@ -9,11 +9,6 @@ namespace Dulo.BaseModels
 {
     public class StaticModel : BaseModel
     {
-        public StaticModel()
-        {
-
-        }
-
         public StaticModel(Texture2D texture)
         {
             base.texture = texture;

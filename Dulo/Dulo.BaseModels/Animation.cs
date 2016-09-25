@@ -6,8 +6,10 @@ using System.Text;
 
 namespace Dulo.BaseModels
 {
-    public class Animation : IUpdater
+    public class Animation : BaseBasis
     {
+        public event Action OnAnimationEnded;
+
         public List<Texture2D> Frames { get; set; }
 
         public int AnimationSpeed { get; set; } = 500;
@@ -18,15 +20,15 @@ namespace Dulo.BaseModels
             {
                 return Frames[currentFrameIndex];
             }
-        } 
+        }
 
+        public bool IsCyclicAnimation { get; set; } = false;
 
         private int currentFrameIndex = 0;
 
-        private int beginTime { get; set; }
+        private long beginTime;
 
         private bool isPlaying = false;
-
 
         public Animation()
         {
@@ -35,7 +37,7 @@ namespace Dulo.BaseModels
 
         public void Play()
         {
-            beginTime = DateTime.Now.Millisecond;
+            beginTime = DateTime.Now.ToMilliseconds();
             isPlaying = true;
         }
 
@@ -50,21 +52,26 @@ namespace Dulo.BaseModels
             currentFrameIndex = 0;
         }
 
-        public void Update()
+        public override void Update()
         {
             if (!isPlaying)
                 return;
 
-            if (NowMillisecond() < beginTime + AnimationSpeed)
+            if (DateTime.Now.ToMilliseconds() < beginTime + AnimationSpeed)
                 return;
             
-            currentFrameIndex = currentFrameIndex < Frames.Count ? currentFrameIndex + 1 : 0;
+            currentFrameIndex = currentFrameIndex < Frames.Count-1 ? currentFrameIndex + 1 : 0;
+
+            beginTime = DateTime.Now.ToMilliseconds();
+
+            if (!IsCyclicAnimation && currentFrameIndex == 0)
+                EndAnimation();
         }
 
-
-        private int NowMillisecond()
+        private void EndAnimation()
         {
-            return DateTime.Now.Millisecond;
+            Stop();
+            OnAnimationEnded?.Invoke();
         }
     }
 }

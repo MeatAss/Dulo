@@ -60,7 +60,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Animation.cs" />
+    <Compile Include="BaseAnimationModel.cs" />
     <Compile Include="BaseModel.cs" />
+    <Compile Include="BaseBasis.cs" />
+    <Compile Include="ExtensionDateTime.cs" />
     <Compile Include="IRenderer.cs" />
     <Compile Include="IUpdater.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -8,46 +8,23 @@ using Microsoft.Xna.Framework;
 
 namespace Dulo.GameObjects
 {
-    public class Tank : IRenderer, IUpdater
+    public class Tank : BaseAnimationModel 
     {
-        public Vector2 Position;
-
-        public float Angle
-        {
-            get
-            {
-                return angle;
-            }
-
-            set
-            {
-                angle = value;
-                tankHead.Angle = value;
-            }
-        }
-
-
-        private float angle;
-
-        private Animation tankBody;
-
-        private StaticModel tankHead;
-
-
         public Tank()
-        {
-
-        }
-
-        public void Render(SpriteBatch canvas)
-        {
-            canvas.Draw(tankBody.CurrentFrame, Position, null, Color.White, Angle, Size, 1, SpriteEffects.None, 0);
-
-        }
-
-        public void Update()
         {
             
         }
+
+        public override void Render(SpriteBatch canvas)
+        {
+
+            base.Render(canvas);
+        }
+
+        public override void Update()
+        {
+
+            base.Update();
+        }        
     }
 }

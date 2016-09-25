@@ -72,17 +72,6 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Dulo.Action\ConditionAction.cs" />
-    <Compile Include="Dulo.Action\IMovingKeyMap.cs" />
-    <Compile Include="Dulo.Action\IShootingKeyMap.cs" />
-    <Compile Include="Dulo.Action\KeyListener.cs" />
-    <Compile Include="Dulo.Action\KeyMap.cs" />
-    <Compile Include="Dulo.Action\Mover.cs" />
-    <Compile Include="Dulo.Action\Shooter.cs" />
-    <Compile Include="Models\Bullet.cs" />
-    <Compile Include="Models\IModel.cs" />
-    <Compile Include="Models\Model.cs" />
-    <Compile Include="Models\Tank.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
@@ -94,6 +83,14 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Dulo.BaseModels\Dulo.BaseModels.csproj">
+      <Project>{637ad84f-7c9b-480e-a43f-9c1c5d0a91a6}</Project>
+      <Name>Dulo.BaseModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Dulo.GameObjects\Dulo.GameObjects.csproj">
+      <Project>{24234d9a-1fcc-48e8-a5a9-73c929219982}</Project>
+      <Name>Dulo.GameObjects</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DuloContent\DuloContent.contentproj">
       <Name>DuloContent</Name>
       <XnaReferenceType>Content</XnaReferenceType>
