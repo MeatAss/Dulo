@@ -1,20 +1,20 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <ProjectGuid>{24234D9A-1FCC-48E8-A5A9-73C929219982}</ProjectGuid>
+    <ProjectGuid>{4F73B1E8-F631-48D8-B0C7-838CC0B09973}</ProjectGuid>
     <ProjectTypeGuids>{6D335F3A-9D43-41b4-9D22-F6F17C4BE596};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Dulo.GameObjects</RootNamespace>
-    <AssemblyName>Dulo.GameObjects</AssemblyName>
+    <RootNamespace>Dulo.Actions</RootNamespace>
+    <AssemblyName>Dulo.Actions</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
     <XnaProfile>Reach</XnaProfile>
-    <XnaCrossPlatformGroupID>fc9827dd-b54e-44d2-9c53-2ffcdad564c8</XnaCrossPlatformGroupID>
+    <XnaCrossPlatformGroupID>22a66eb3-e327-40ea-8a71-d391b3f2b3ac</XnaCrossPlatformGroupID>
     <XnaOutputType>Library</XnaOutputType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -59,14 +59,10 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Mover.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Tank.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Dulo.Actions\Dulo.Actions.csproj">
-      <Project>{4f73b1e8-f631-48d8-b0c7-838cc0b09973}</Project>
-      <Name>Dulo.Actions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Dulo.BaseModels\Dulo.BaseModels.csproj">
       <Project>{637ad84f-7c9b-480e-a43f-9c1c5d0a91a6}</Project>
       <Name>Dulo.BaseModels</Name>
