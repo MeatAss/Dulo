@@ -54,8 +54,20 @@ namespace Dulo
             animationTankBody.Frames.Add(Content.Load<Texture2D>("1"));
             animationTankBody.Frames.Add(Content.Load<Texture2D>("2"));
             animationTankBody.Frames.Add(Content.Load<Texture2D>("3"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("4"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("5"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("6"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("7"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("8"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("9"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("10"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("11"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("12"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("13"));
+            animationTankBody.Frames.Add(Content.Load<Texture2D>("14"));
+          
             animationTankBody.IsCyclicAnimation = true;
-            animationTankBody.AnimationSpeed = 200;
+            animationTankBody.AnimationSpeed = 42;
 
             tankLexa.AddNewAnimation(animationTankBody, "gogogo");
             tankLexa.ChangeAnimation("gogogo");

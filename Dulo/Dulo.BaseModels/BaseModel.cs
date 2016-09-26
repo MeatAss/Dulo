@@ -62,7 +62,7 @@ namespace Dulo.BaseModels
 
         public override void Render(SpriteBatch canvas)
         {
-            canvas.Draw(texture, Position, null, Color.White, Angle, new Vector2(rect.Center.X, rect.Center.Y), Scale, SpriteEffects.None, 0);
+            canvas.Draw(texture, Position, null, Color.White, Angle, new Vector2(texture.Width / 2, texture.Height / 2), Scale, SpriteEffects.None, 0);
         }
     }
 }
