@@ -15,7 +15,7 @@ namespace Dulo.GameObjects
 {
     public class Tank : BaseAnimationModel 
     {
-        private Turret turret;
+        public Turret turret;
 
         private IMovingKeyMap movingKeyMap;
         private IShootingKeyMap shootingKeyMap;

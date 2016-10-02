@@ -42,8 +42,8 @@ namespace Dulo
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = 800;
-            graphics.PreferredBackBufferHeight = 600;
+            graphics.PreferredBackBufferWidth = 1920;
+            graphics.PreferredBackBufferHeight = 1080;
             IsMouseVisible = true;                          
         }
 
@@ -72,7 +72,7 @@ namespace Dulo
 
 
 
-            tankLexa = new Tank(world, Content.Load<Texture2D>("танк/Tank0"), Content.Load<Texture2D>("gun1/1"), keyMap);
+            tankLexa = new Tank(world, Content.Load<Texture2D>("tank/Tank0"), Content.Load<Texture2D>("gun1/1"), keyMap);
 
             Animation a = new Animation();
 
@@ -84,7 +84,7 @@ namespace Dulo
 
             tankLexa.AddTurretAnimation(a, "firefirefire");
             tankLexa.ChangeTurretAnimation("firefirefire");
-            tankLexa.TurretAnimationPlay();
+            //tankLexa.TurretAnimationPlay();
 
             tankLexa.Position = Vector2.Zero;
 
@@ -92,7 +92,7 @@ namespace Dulo
             Animation animationTankBody = new Animation();
 
             for (int i = 0; i < 14; i++)
-                animationTankBody.Frames.Add(Content.Load<Texture2D>($"танк/Tank{i}"));
+                animationTankBody.Frames.Add(Content.Load<Texture2D>($"tank/Tank{i}"));
 
             
             animationTankBody.IsCyclicAnimation = true;
@@ -101,6 +101,7 @@ namespace Dulo
             tankLexa.AddNewAnimation(animationTankBody, "gogogo");
             tankLexa.ChangeAnimation("gogogo");
             tankLexa.AnimationPlay();
+         
 
             tankLexa.SpeedMoving = 15f;
             tankLexa.SpeedRotating = 7f;
@@ -156,23 +157,23 @@ namespace Dulo
 
         
         protected override void Update(GameTime gameTime)
-        {
-            
+        {            
             tankLexa.Update();
             //tankSlava.Update();
 
             world.Step(Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, (1f / 30f)));
             base.Update(gameTime);
 
-            Window.Title = tankLexa.Position.ToString();
+            Window.Title = tankLexa.turret.test.ToString();
         }
 
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.CornflowerBlue);
-    
-            spriteBatch.Begin(0, null, null, null, null, null, View);
+
+            //spriteBatch.Begin(0, null, null, null, null, null, View);
+            spriteBatch.Begin();
             tankLexa.Draw(spriteBatch);
             //tankSlava.Draw(spriteBatch);
             spriteBatch.End();

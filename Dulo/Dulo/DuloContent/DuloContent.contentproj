@@ -59,72 +59,72 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="танк\Tank0.png">
+    <Compile Include="tank\Tank0.png">
       <Name>Tank0</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank1.png">
+    <Compile Include="tank\Tank1.png">
       <Name>Tank1</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank10.png">
+    <Compile Include="tank\Tank10.png">
       <Name>Tank10</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank11.png">
+    <Compile Include="tank\Tank11.png">
       <Name>Tank11</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank12.png">
+    <Compile Include="tank\Tank12.png">
       <Name>Tank12</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank13.png">
+    <Compile Include="tank\Tank13.png">
       <Name>Tank13</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank2.png">
+    <Compile Include="tank\Tank2.png">
       <Name>Tank2</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank3.png">
+    <Compile Include="tank\Tank3.png">
       <Name>Tank3</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank4.png">
+    <Compile Include="tank\Tank4.png">
       <Name>Tank4</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank5.png">
+    <Compile Include="tank\Tank5.png">
       <Name>Tank5</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank6.png">
+    <Compile Include="tank\Tank6.png">
       <Name>Tank6</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank7.png">
+    <Compile Include="tank\Tank7.png">
       <Name>Tank7</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank8.png">
+    <Compile Include="tank\Tank8.png">
       <Name>Tank8</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="танк\Tank9.png">
+    <Compile Include="tank\Tank9.png">
       <Name>Tank9</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
