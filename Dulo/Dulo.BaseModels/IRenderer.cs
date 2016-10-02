@@ -8,6 +8,6 @@ namespace Dulo.BaseModels
 {
     public interface IRenderer
     {
-        void Render(SpriteBatch canvas);
+        void Draw(SpriteBatch canvas);
     }
 }

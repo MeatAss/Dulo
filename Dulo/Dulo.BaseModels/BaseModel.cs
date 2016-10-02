@@ -4,6 +4,12 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics;
+using FarseerPhysics.Common;
+using FarseerPhysics.Common.PolygonManipulation;
+using FarseerPhysics.Common.Decomposition;
+using FarseerPhysics.Factories;
 
 namespace Dulo.BaseModels
 {
@@ -11,58 +17,99 @@ namespace Dulo.BaseModels
     {
         protected Texture2D texture;
 
-        private Rectangle rect;
-        public Rectangle Rect
-        {
-            get
-            {
-                return rect;
-            }
-        }
+        public Body Body { get; private set; }
+        protected World world;
 
-        public Vector2 position;
+        protected Vector2 center;
+
         public Vector2 Position
         {
             get
             {
-                return position;
+                return  ConvertUnits.ToDisplayUnits(Body.Position);
             }
 
             set
             {
-                position = value;
-                rect.Location = new Point((int)position.X, (int)position.Y);
+                Body.Position = ConvertUnits.ToSimUnits(value);
             }
         }
 
-        private float scale = 1f;
-        public float Scale
+        /// <summary>
+        /// Degrees!! Bleat
+        /// </summary>
+        public float Angle
         {
             get
             {
-                return scale;
+                return MathHelper.ToDegrees(Body.Rotation);
             }
+
             set
             {
-                if (value <= 0)
-                {
-                    scale = 1;
-                }
-                else
-                {
-                    scale = value;
-                }
-
-                rect.Width = (int)Math.Round(texture.Width * scale);
-                rect.Height = (int)Math.Round(texture.Height * scale);
+                Body.Rotation = MathHelper.ToRadians(value);
             }
         }
 
-        public float Angle { get; set; }
 
-        public override void Render(SpriteBatch canvas)
+        public BaseModel(World world, Texture2D physicalTextureMap)
         {
-            canvas.Draw(texture, Position, null, Color.White, Angle, new Vector2(texture.Width / 2, texture.Height / 2), Scale, SpriteEffects.None, 0);
+            this.world = world;
+            Initialize(physicalTextureMap);
         }
+
+
+        public override void Draw(SpriteBatch canvas)
+        { 
+            canvas.Draw(texture, ConvertUnits.ToDisplayUnits(Body.Position), null, Color.White, Body.Rotation, center, 1f, SpriteEffects.None, 0f);           
+        }
+
+        private void Initialize(Texture2D physicalTextureMap)
+        {
+            var textureVertices = CreateVerticesFromPhysicalTextureMap(physicalTextureMap);
+
+            center = GetCenterFromVertices(textureVertices);
+
+            textureVertices = SimplifyTools.ReduceByDistance(textureVertices, 4f);
+
+            var list = TriangulateVertices(textureVertices, TriangulationAlgorithm.Bayazit);
+
+            Body = CreateBody(list);
+        }
+
+        private Vertices CreateVerticesFromPhysicalTextureMap(Texture2D physicalTextureMap)
+        {
+            uint[] data = new uint[physicalTextureMap.Width * physicalTextureMap.Height];
+            physicalTextureMap.GetData(data);
+
+            return PolygonTools.CreatePolygon(data, physicalTextureMap.Width, false);
+        }
+
+        
+        private Vector2 GetCenterFromVertices(Vertices vertices)
+        {
+            Vector2 centroid = -vertices.GetCentroid();
+            vertices.Translate(ref centroid);
+
+            return -centroid;
+        }
+
+        private List<Vertices> TriangulateVertices(Vertices vertices, TriangulationAlgorithm algorithm)
+        {
+            List<Vertices> list = Triangulate.ConvexPartition(vertices, algorithm);
+
+            Vector2 vertScale = new Vector2(ConvertUnits.ToSimUnits(1)) * 1f;
+            list.ForEach((item) => item.Scale(ref vertScale));
+
+            return list;
+        }
+
+        private Body CreateBody(List<Vertices> verticesList)
+        {
+            var result = BodyFactory.CreateCompoundPolygon(world, verticesList, 1f, BodyType.Dynamic);
+            result.BodyType = BodyType.Dynamic;
+            return result;
+        }
+
     }
 }

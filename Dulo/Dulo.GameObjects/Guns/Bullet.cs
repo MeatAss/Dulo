@@ -5,6 +5,8 @@ using System.Text;
 using Dulo.BaseModels;
 using Dulo.Actions;
 using Microsoft.Xna.Framework;
+using FarseerPhysics.Dynamics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Dulo.GameObjects.Guns
 {
@@ -14,9 +16,10 @@ namespace Dulo.GameObjects.Guns
 
         public float Speed { get; set; }
 
-        public Bullet(float speed)
+
+        public Bullet(World world, Texture2D physicalTextureMap, float speed) : base(world, physicalTextureMap)
         {
-            mover = new Mover(this);
+            mover = new Mover(this, 0, 0);
 
             Speed = speed;
         }
@@ -26,35 +29,6 @@ namespace Dulo.GameObjects.Guns
             base.Update();
 
             mover.MoveTo(Speed);
-        }
-
-        public void Reflect(Rectangle rect)
-        {
-            var angelModel = new AngelModel(Angle);
-
-            if (rect.Left <= Rect.Center.X && Rect.Center.X <= rect.Right)
-                ReflectHorizontal(angelModel);
-
-            if (rect.Top <= Rect.Center.Y && Rect.Center.Y <= rect.Bottom)
-                ReflectVertical(angelModel);
-        }
-
-        private void ReflectVertical(AngelModel angelModel)
-        {
-            if (angelModel.Fourth == 0 || angelModel.Fourth == 2)
-                Angle += angelModel.RightAngle * 2;
-
-            if(angelModel.Fourth == 1 || angelModel.Fourth == 3)
-                Angle -= angelModel.LeftAngle * 2;
-        }
-
-        private void ReflectHorizontal(AngelModel angelModel)
-        {
-            if (angelModel.Fourth == 0 || angelModel.Fourth == 2)
-                Angle -= angelModel.LeftAngle * 2;
-
-            if (angelModel.Fourth == 1 || angelModel.Fourth == 3)
-                Angle += angelModel.RightAngle * 2;
         }
     }
 }

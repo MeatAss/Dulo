@@ -72,6 +72,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FrameCounter.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
@@ -98,6 +99,10 @@
     <ProjectReference Include="..\..\Dulo.InputModel\Dulo.InputModel.csproj">
       <Project>{04d182e3-3c35-4845-903c-31d5b567ed9e}</Project>
       <Name>Dulo.InputModel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Farseer Physics Engine 3.5\Farseer Physics XNA.csproj">
+      <Project>{0a850700-1abb-4288-a391-6726b90ebeb9}</Project>
+      <Name>Farseer Physics XNA</Name>
     </ProjectReference>
     <ProjectReference Include="..\DuloContent\DuloContent.contentproj">
       <Name>DuloContent</Name>

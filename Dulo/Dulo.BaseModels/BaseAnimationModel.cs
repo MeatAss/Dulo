@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FarseerPhysics.Dynamics;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Dulo.BaseModels
 {
@@ -10,6 +12,10 @@ namespace Dulo.BaseModels
         private Dictionary<string, Animation> animations = new Dictionary<string, Animation>();
 
         private string animationName = "";
+
+        public BaseAnimationModel(World world, Texture2D physicalTextureMap) : base(world, physicalTextureMap)
+        {
+        }
 
         public override void Update()
         {
@@ -35,8 +41,11 @@ namespace Dulo.BaseModels
             if (!IsExistAnimation(animationName))
                 return false;
 
+            if (animationName != "")
+                animations[animationName].Stop();
+
             this.animationName = animationName;
-            animations[animationName].Stop();
+            texture = animations[animationName].CurrentFrame;
             return true;
         }
 
@@ -49,7 +58,7 @@ namespace Dulo.BaseModels
         public void AnimationPlay()
         {
             if (string.IsNullOrEmpty(animationName))
-                return;
+                throw new Exception("Aimation not selected!. (call ChangeAnimation before call AnimationPlay)");
 
             animations[animationName].Play();
         }

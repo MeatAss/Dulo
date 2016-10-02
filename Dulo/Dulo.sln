@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dulo", "Dulo\Dulo\Dulo.csproj", "{755CD08B-EF69-4FE1-92AF-436B94FD79AC}"
 EndProject
@@ -14,6 +14,10 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dulo.InputModel", "Dulo.InputModel\Dulo.InputModel.csproj", "{04D182E3-3C35-4845-903C-31D5B567ED9E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Dulo.Actions", "Dulo.Actions\Dulo.Actions.csproj", "{4F73B1E8-F631-48D8-B0C7-838CC0B09973}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer Physics XNA", "Farseer Physics Engine 3.5\Farseer Physics XNA.csproj", "{0A850700-1ABB-4288-A391-6726B90EBEB9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FarseerGame", "FarseerGame\FarseerGame.csproj", "{C9D2D4F1-AC85-45F4-B71A-28BB81AD382D}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -43,6 +47,14 @@ Global
 		{4F73B1E8-F631-48D8-B0C7-838CC0B09973}.Debug|x86.Build.0 = Debug|x86
 		{4F73B1E8-F631-48D8-B0C7-838CC0B09973}.Release|x86.ActiveCfg = Release|x86
 		{4F73B1E8-F631-48D8-B0C7-838CC0B09973}.Release|x86.Build.0 = Release|x86
+		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Debug|x86.ActiveCfg = Debug|x86
+		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Debug|x86.Build.0 = Debug|x86
+		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Release|x86.ActiveCfg = Release|x86
+		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Release|x86.Build.0 = Release|x86
+		{C9D2D4F1-AC85-45F4-B71A-28BB81AD382D}.Debug|x86.ActiveCfg = Debug|x86
+		{C9D2D4F1-AC85-45F4-B71A-28BB81AD382D}.Debug|x86.Build.0 = Debug|x86
+		{C9D2D4F1-AC85-45F4-B71A-28BB81AD382D}.Release|x86.ActiveCfg = Release|x86
+		{C9D2D4F1-AC85-45F4-B71A-28BB81AD382D}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

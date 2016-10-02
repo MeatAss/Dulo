@@ -8,11 +8,15 @@ using Microsoft.Xna.Framework;
 using Dulo.InputModel;
 using Dulo.Actions;
 using Microsoft.Xna.Framework.Input;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Dynamics.Joints;
 
 namespace Dulo.GameObjects
 {
     public class Tank : BaseAnimationModel 
     {
+        private Turret turret;
+
         private IMovingKeyMap movingKeyMap;
         private IShootingKeyMap shootingKeyMap;
         private KeyListener keyListener;
@@ -21,6 +25,8 @@ namespace Dulo.GameObjects
 
         private float speedMoving;
         private float speedRotating;
+
+        public float TurretSpeedRotation { get; set; }
 
         public float SpeedMoving
         {
@@ -46,13 +52,28 @@ namespace Dulo.GameObjects
             }
         }
 
-        public Tank(KeyMap keyMap)
+
+        public Tank(World world, Texture2D physicalTextureMapTank, Texture2D physicalTextureMapTurret, KeyMap keyMap) : base(world, physicalTextureMapTank)
         {
             movingKeyMap = keyMap;
             shootingKeyMap = keyMap;
 
-            mover = new Mover(this);
+            mover = new Mover(this, 5f, 18f);
             InitializeKeyListener();
+
+            turret = new Turret(world, physicalTextureMapTurret);
+            turret.Body.Mass = 0.1f;
+
+            turret.Body.AngularDamping = 15f;
+
+            var a = new RevoluteJoint(Body, turret.Body, FarseerPhysics.ConvertUnits.ToSimUnits(new Vector2(0, 9.7f)));
+
+            a.LocalAnchorA -= FarseerPhysics.ConvertUnits.ToSimUnits(new Vector2(0, 9.7f));
+
+            world.AddJoint(a);
+
+
+            Body.IgnoreCollisionWith(turret.Body);
         }
 
         private void InitializeKeyListener()
@@ -64,17 +85,36 @@ namespace Dulo.GameObjects
             keyListener.Add(movingKeyMap.Right, () => mover.Rotate(speedRotating));
         }
 
-        public override void Render(SpriteBatch canvas)
-        {
-
-            base.Render(canvas);
+        public override void Draw(SpriteBatch canvas)
+        {        
+            base.Draw(canvas);
+            turret.Draw(canvas);
         }
 
         public override void Update()
         {
             base.Update();
 
-            keyListener.Check(Keyboard.GetState());            
-        }        
+            turret.Update();
+
+            keyListener.Check(Keyboard.GetState());    
+
+//            turret.Body.ApplyTorque(0.5f);
+        }       
+        
+        public void AddTurretAnimation(Animation animation, string animationName)
+        {
+            turret.AddNewAnimation(animation, animationName);
+        } 
+
+        public void ChangeTurretAnimation(string animationName)
+        {
+            turret.ChangeAnimation(animationName);
+        }
+
+        public void TurretAnimationPlay()
+        {
+            turret.AnimationPlay();
+        }
     }
 }

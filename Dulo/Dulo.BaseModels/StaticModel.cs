@@ -4,20 +4,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FarseerPhysics.Dynamics;
 
 namespace Dulo.BaseModels
 {
     public class StaticModel : BaseModel
     {
-        public StaticModel(Texture2D texture)
+        public StaticModel(World world, Texture2D physicalTextureMap) : base(world, physicalTextureMap)
         {
-            base.texture = texture;
-        }
-
-        public StaticModel(Texture2D texture, Vector2 position)
-        {
-            base.texture = texture;
-            Position = position;
         }
     }
 }
