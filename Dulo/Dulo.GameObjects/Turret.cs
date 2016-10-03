@@ -9,12 +9,17 @@ using Microsoft.Xna.Framework;
 using Dulo.InputModel;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Dynamics.Joints;
+using System.IO;
 
 namespace Dulo.GameObjects
 {
     public class Turret : BaseAnimationModel
     {
-        public float test;
+        public bool IsLookAtMouse { get; set; } = true;
+
+        public float SpeedRotation { get; set; } = 0.5f;
+
+        private float percentageError = 0.034f;
 
         public Turret(World world, Texture2D physicalTextureMap) : base(world, physicalTextureMap)
         {
@@ -25,26 +30,44 @@ namespace Dulo.GameObjects
         {
             base.Update();
 
+            if (!IsLookAtMouse)
+                return;
+
+            var mouseAngle = GetMouseAngle();
+
+            if (Math.Abs(mouseAngle - Angle) < percentageError)
+                return;
+
+            RotateTurretToCursor(mouseAngle);
+        }
+
+        private float GetMouseAngle()
+        {
             var mouseState = Mouse.GetState();
-            var bodyRot = new Vector2((float)Math.Cos(Position.X), (float)Math.Sin(Position.Y));
 
-            var Cursor = new Vector2(mouseState.X, mouseState.Y);
+            
+            var angle = (float)Math.Atan2((mouseState.Y - Position.Y), (mouseState.X - Position.X)) + MathHelper.PiOver2;
 
-            var mouseVector = new Vector2(mouseState.X - Position.X, mouseState.Y - Position.Y);
+            angle = angle >= 0 ? MathHelper.TwoPi - angle : Math.Abs(angle);
+            angle = MathHelper.TwoPi - angle;
 
-            //angle = (float)Math.Atan2(mouseVector.Y, mouseVector.X) + MathHelper.PiOver2;
+            return angle;
+        }
 
-            test = (float)Math.Acos((bodyRot.X * mouseVector.X + bodyRot.Y * mouseVector.Y) / (bodyRot.Length() * mouseVector.Length())) - MathHelper.PiOver2;
+        private void RotateTurretToCursor(float mouseAngle)
+        {
+            if (mouseAngle - Angle < 0)
+            {
+                var direction = MathHelper.TwoPi + mouseAngle - Angle >= MathHelper.Pi ? -1 : 1;
 
-            //if (angle - Body.Rotation <= -0.03f)
-            //{
-            //    Body.ApplyTorque(-0.5f);
-            //}
+                Body.ApplyTorque(SpeedRotation * direction);
+            }
+            else
+            {
+                var direction = mouseAngle - Angle > MathHelper.Pi ? -1 : 1;
 
-            //if (angle - Body.Rotation >= 0.03f)
-            //{
-            //    Body.ApplyTorque(0.5f);
-            //}
+                Body.ApplyTorque(SpeedRotation * direction);
+            }
         }
     }
 }

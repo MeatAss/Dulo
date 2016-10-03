@@ -31,7 +31,7 @@ namespace Dulo
 
 
         KeyMap keyMap;
-        KeyMap a;
+        KeyMap q;
         Tank tankLexa;
         Tank tankSlava;
         FrameCounter fps;
@@ -42,8 +42,8 @@ namespace Dulo
         {
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            graphics.PreferredBackBufferWidth = 1920;
-            graphics.PreferredBackBufferHeight = 1080;
+            graphics.PreferredBackBufferWidth = 800;
+            graphics.PreferredBackBufferHeight = 600;
             IsMouseVisible = true;                          
         }
 
@@ -75,9 +75,13 @@ namespace Dulo
             tankLexa = new Tank(world, Content.Load<Texture2D>("tank/Tank0"), Content.Load<Texture2D>("gun1/1"), keyMap);
 
             Animation a = new Animation();
+            Animation b = new Animation();
 
             for (int i = 1; i < 4; i++)
+            {
                 a.Frames.Add(Content.Load<Texture2D>($"gun1/{i}"));
+                b.Frames.Add(Content.Load<Texture2D>($"gun1/{i}"));
+            }
 
             a.IsCyclicAnimation = true;
             a.AnimationSpeed = 10;
@@ -90,9 +94,13 @@ namespace Dulo
 
 
             Animation animationTankBody = new Animation();
+            Animation animationTankBodySlava = new Animation();
 
             for (int i = 0; i < 14; i++)
+            {
                 animationTankBody.Frames.Add(Content.Load<Texture2D>($"tank/Tank{i}"));
+                animationTankBodySlava.Frames.Add(Content.Load<Texture2D>($"tank/Tank{i}"));
+            }
 
             
             animationTankBody.IsCyclicAnimation = true;
@@ -106,24 +114,29 @@ namespace Dulo
             tankLexa.SpeedMoving = 15f;
             tankLexa.SpeedRotating = 7f;
 
-            //a = new KeyMap();
-            //a.Up = Keys.Up;
-            //a.Down = Keys.Down;
-            //a.Right = Keys.Right;
-            //a.Left = Keys.Left;
+            q = new KeyMap();
+            q.Up = Keys.Up;
+            q.Down = Keys.Down;
+            q.Right = Keys.Right;
+            q.Left = Keys.Left;
 
-            //tankSlava = new Tank(world, Content.Load<Texture2D>("танк/Tank0"), a);
-            //tankSlava.Position = new Vector2(-100, -100);
+            tankSlava = new Tank(world, Content.Load<Texture2D>("tank/Tank0"), Content.Load<Texture2D>("gun1/1"), q);
+            tankSlava.Position = new Vector2(100, 100);
 
-            //tankSlava.AddNewAnimation(animationTankBody, "gogogo");
-            //tankSlava.ChangeAnimation("gogogo");
-            //tankSlava.AnimationPlay();
-            //tankSlava.Position = new Vector2(-100, -100);
+            animationTankBodySlava.IsCyclicAnimation = true;
+            animationTankBodySlava.AnimationSpeed = 10;
 
-            //tankSlava.SpeedMoving = 15f;
-            //tankSlava.SpeedRotating = 7f;
+            tankSlava.AddNewAnimation(animationTankBodySlava, "gogogo");
+            tankSlava.ChangeAnimation("gogogo");
+            tankSlava.AnimationPlay();
 
-            //tankSlava.Body.Mass = 5;
+            tankSlava.AddTurretAnimation(b, "firefirefire");
+            tankSlava.ChangeTurretAnimation("firefirefire");
+
+            tankSlava.SpeedMoving = 75f;
+            tankSlava.SpeedRotating = 7f;
+
+            tankSlava.Body.Mass = 5;
         }
 
 
@@ -159,12 +172,12 @@ namespace Dulo
         protected override void Update(GameTime gameTime)
         {            
             tankLexa.Update();
-            //tankSlava.Update();
+            tankSlava.Update();
 
             world.Step(Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, (1f / 30f)));
             base.Update(gameTime);
 
-            Window.Title = tankLexa.turret.test.ToString();
+            Window.Title = tankLexa.turret.Angle.ToString();
         }
 
 
@@ -175,7 +188,7 @@ namespace Dulo
             //spriteBatch.Begin(0, null, null, null, null, null, View);
             spriteBatch.Begin();
             tankLexa.Draw(spriteBatch);
-            //tankSlava.Draw(spriteBatch);
+            tankSlava.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

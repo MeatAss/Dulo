@@ -34,21 +34,26 @@ namespace Dulo.BaseModels
                 Body.Position = ConvertUnits.ToSimUnits(value);
             }
         }
-
-        /// <summary>
-        /// Degrees!! Bleat
-        /// </summary>
+        
         public float Angle
         {
             get
             {
-                return MathHelper.ToDegrees(Body.Rotation);
+                if (Body.Rotation >= 0)
+                {
+                    return Body.Rotation % MathHelper.TwoPi;
+                }
+                else
+                {
+                    return MathHelper.TwoPi - Math.Abs(Body.Rotation) % MathHelper.TwoPi;
+                }
             }
+            //}
 
-            set
-            {
-                Body.Rotation = MathHelper.ToRadians(value);
-            }
+            //set
+            //{
+            //    Body.Rotation = MathHelper.ToRadians(value);
+            //}
         }
 
 
