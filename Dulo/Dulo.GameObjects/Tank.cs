@@ -53,7 +53,7 @@ namespace Dulo.GameObjects
         }
 
 
-        public Tank(World world, Texture2D physicalTextureMapTank, Texture2D physicalTextureMapTurret, KeyMap keyMap) : base(world, physicalTextureMapTank)
+        public Tank(World world, Texture2D physicalTextureMapTank, Texture2D physicalTextureMapTurret, Texture2D physicalTextureMapBullet, KeyMap keyMap) : base(world, physicalTextureMapTank)
         {
             movingKeyMap = keyMap;
             shootingKeyMap = keyMap;
@@ -61,7 +61,7 @@ namespace Dulo.GameObjects
             mover = new Mover(this, 5f, 18f);
             InitializeKeyListener();
 
-            turret = new Turret(world, physicalTextureMapTurret);
+            turret = new Turret(world, physicalTextureMapTurret, physicalTextureMapBullet);
             turret.Body.Mass = 0.1f;
 
             turret.Body.AngularDamping = 15f;
@@ -83,6 +83,7 @@ namespace Dulo.GameObjects
             keyListener.Add(movingKeyMap.Down, () => mover.MoveTo(-speedMoving * 0.6f));
             keyListener.Add(movingKeyMap.Left, () => mover.Rotate(-speedRotating));
             keyListener.Add(movingKeyMap.Right, () => mover.Rotate(speedRotating));
+            keyListener.Add(shootingKeyMap.Fire, () => turret.Fire());
         }
 
         public override void Draw(SpriteBatch canvas)

@@ -10,6 +10,7 @@ using Dulo.InputModel;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Dynamics.Joints;
 using System.IO;
+using Dulo.GameObjects.Guns;
 
 namespace Dulo.GameObjects
 {
@@ -21,24 +22,28 @@ namespace Dulo.GameObjects
 
         private float percentageError = 0.034f;
 
-        public Turret(World world, Texture2D physicalTextureMap) : base(world, physicalTextureMap)
+        public DefaultGun gun;
+
+        public Turret(World world, Texture2D physicalTextureMap, Texture2D physicalTextureMapBullet) : base(world, physicalTextureMap)
         {
             Body.AngularDamping = 50f;
+
+            gun = new DefaultGun(world, physicalTextureMapBullet);
         }
 
         public override void Update()
         {
             base.Update();
-
+            
             if (!IsLookAtMouse)
                 return;
 
             var mouseAngle = GetMouseAngle();
 
-            if (Math.Abs(mouseAngle - Angle) < percentageError)
-                return;
+            if (Math.Abs(mouseAngle - Angle) > percentageError)
+                RotateTurretToCursor(mouseAngle);             
 
-            RotateTurretToCursor(mouseAngle);
+            gun.Update();
         }
 
         private float GetMouseAngle()
@@ -68,6 +73,18 @@ namespace Dulo.GameObjects
 
                 Body.ApplyTorque(SpeedRotation * direction);
             }
+        }
+
+        public void Fire()
+        {
+            gun.Fire(Body.Position + GetDirection() * 0.5f, Body.Rotation);
+        }
+
+        public override void Draw(SpriteBatch canvas)
+        {
+            base.Draw(canvas);
+
+            gun.Draw(canvas);
         }
     }
 }

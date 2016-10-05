@@ -48,12 +48,6 @@ namespace Dulo.BaseModels
                     return MathHelper.TwoPi - Math.Abs(Body.Rotation) % MathHelper.TwoPi;
                 }
             }
-            //}
-
-            //set
-            //{
-            //    Body.Rotation = MathHelper.ToRadians(value);
-            //}
         }
 
 
@@ -69,6 +63,12 @@ namespace Dulo.BaseModels
             canvas.Draw(texture, ConvertUnits.ToDisplayUnits(Body.Position), null, Color.White, Body.Rotation, center, 1f, SpriteEffects.None, 0f);           
         }
 
+        public Vector2 GetDirection()
+        {
+            return new Vector2((float)Math.Cos(Body.Rotation - Math.PI / 2),
+                (float)Math.Sin(Body.Rotation - Math.PI / 2));
+        }
+
         private void Initialize(Texture2D physicalTextureMap)
         {
             var textureVertices = CreateVerticesFromPhysicalTextureMap(physicalTextureMap);
@@ -78,7 +78,7 @@ namespace Dulo.BaseModels
             textureVertices = SimplifyTools.ReduceByDistance(textureVertices, 4f);
 
             var list = TriangulateVertices(textureVertices, TriangulationAlgorithm.Bayazit);
-
+            
             Body = CreateBody(list);
         }
 
