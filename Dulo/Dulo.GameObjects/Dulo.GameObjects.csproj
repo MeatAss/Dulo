@@ -75,6 +75,10 @@
       <Project>{637ad84f-7c9b-480e-a43f-9c1c5d0a91a6}</Project>
       <Name>Dulo.BaseModels</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Dulo.BasisModels\Dulo.BasisModels.csproj">
+      <Project>{4fee2fce-158f-481d-add6-e816f20f2d9f}</Project>
+      <Name>Dulo.BasisModels</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Dulo.InputModel\Dulo.InputModel.csproj">
       <Project>{04d182e3-3c35-4845-903c-31d5b567ed9e}</Project>
       <Name>Dulo.InputModel</Name>

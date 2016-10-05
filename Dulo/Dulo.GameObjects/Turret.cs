@@ -22,7 +22,7 @@ namespace Dulo.GameObjects
 
         private float percentageError = 0.034f;
 
-        public DefaultGun gun;
+        public BaseGun gun;
 
         public Turret(World world, Texture2D physicalTextureMap, Texture2D physicalTextureMapBullet) : base(world, physicalTextureMap)
         {
@@ -49,8 +49,7 @@ namespace Dulo.GameObjects
         private float GetMouseAngle()
         {
             var mouseState = Mouse.GetState();
-
-            
+           
             var angle = (float)Math.Atan2((mouseState.Y - Position.Y), (mouseState.X - Position.X)) + MathHelper.PiOver2;
 
             angle = angle >= 0 ? MathHelper.TwoPi - angle : Math.Abs(angle);

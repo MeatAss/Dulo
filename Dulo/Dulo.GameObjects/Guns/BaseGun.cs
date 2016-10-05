@@ -1,4 +1,5 @@
 ﻿using Dulo.BaseModels;
+using Dulo.BasisModels;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -10,19 +11,31 @@ using System.Threading.Tasks;
 
 namespace Dulo.GameObjects.Guns
 {
-    public abstract class BaseGun : BaseModels.BaseBasis
+    public abstract class BaseGun : BaseBasis
     {
         private List<Bullet> Bullets { get; set; } = new List<Bullet>();
 
-        public int CountBullets { get; set; } = 20;
-
         protected float bulletSpeed = 0.5f;
 
-        public float DelayShot { get; set; } = 100;
-        private long lastShotTime;
+        protected int countBullets { get; set; } = 20;
+
+        protected float delayShot { get; set; } = 100;
+
 
         private World world;
         private Texture2D texture;
+
+        private long lastShotTime;
+
+
+        public Animation DefaultBulletAnimation { get; set; }
+
+        public Animation ExplosionBulletAnimation { get; set; }
+
+        public Animation EndingLifetimeBulletAnimation { get; set; }
+
+        public Animation ColisionBulletAnimation { get; set; }
+
 
         public BaseGun(World world, Texture2D physicalTextureMapBullet)
         {
@@ -34,28 +47,36 @@ namespace Dulo.GameObjects.Guns
 
         public void Fire(Vector2 startPosition, float startDirection)
         {
-            if (CountBullets > Bullets.Count && DateTime.Now.ToMilliseconds() - lastShotTime > DelayShot)
-            {
-                var Bullet = new Bullet(world, texture);
-                Bullet.OnBulletDeath += Bullet_OnBulletDeath;
+            if (Bullets.Count >= countBullets || DateTime.Now.ToMilliseconds() - lastShotTime < delayShot)
+                return;
 
-                var animationBullet = new BaseModels.Animation();
-                animationBullet.Frames.Add(texture);
-                Bullet.AddNewAnimation(animationBullet, "fire");
-                Bullet.ChangeAnimation("fire");
-                Bullet.Fire(startPosition, startDirection, bulletSpeed);
+            var bullet = CreateDefaultBullet(startPosition, startDirection);
 
-                Bullets.Add(Bullet);
+            Bullets.Add(bullet);
+            bullet.Fire(startPosition, startDirection, bulletSpeed);
 
-                lastShotTime = DateTime.Now.ToMilliseconds();
-            }
+            lastShotTime = DateTime.Now.ToMilliseconds();
+        }
+
+        private Bullet CreateDefaultBullet(Vector2 startPosition, float startDirection)
+        {
+            var bullet = new Bullet(world, texture);
+            bullet.OnBulletDeath += Bullet_OnBulletDeath;
+
+            if (DefaultBulletAnimation == null)
+                throw new Exception("Initialize DefaultBulletAnimation!");
+
+            bullet.AddNewAnimation(DefaultBulletAnimation, "default");
+            bullet.ChangeAnimation("default");
+            bullet.AnimationPlay();
+
+            return bullet;
         }
 
         private void Bullet_OnBulletDeath(Bullet bullet)
         {
             world.RemoveBody(bullet.Body);
             Bullets.Remove(bullet);
-            bullet = null; 
         }
 
         public override void Draw(SpriteBatch canvas)

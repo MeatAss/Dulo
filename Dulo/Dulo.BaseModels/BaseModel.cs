@@ -10,6 +10,7 @@ using FarseerPhysics.Common;
 using FarseerPhysics.Common.PolygonManipulation;
 using FarseerPhysics.Common.Decomposition;
 using FarseerPhysics.Factories;
+using Dulo.BasisModels;
 
 namespace Dulo.BaseModels
 {

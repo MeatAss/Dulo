@@ -92,6 +92,10 @@
       <Project>{637ad84f-7c9b-480e-a43f-9c1c5d0a91a6}</Project>
       <Name>Dulo.BaseModels</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Dulo.BasisModels\Dulo.BasisModels.csproj">
+      <Project>{4fee2fce-158f-481d-add6-e816f20f2d9f}</Project>
+      <Name>Dulo.BasisModels</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Dulo.GameObjects\Dulo.GameObjects.csproj">
       <Project>{24234d9a-1fcc-48e8-a5a9-73c929219982}</Project>
       <Name>Dulo.GameObjects</Name>

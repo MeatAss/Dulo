@@ -99,8 +99,6 @@ namespace Dulo.GameObjects
             turret.Update();
 
             keyListener.Check(Keyboard.GetState());    
-
-//            turret.Body.ApplyTorque(0.5f);
         }       
         
         public void AddTurretAnimation(Animation animation, string animationName)

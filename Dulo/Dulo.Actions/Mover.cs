@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Dulo.InputModel;
 using Dulo.BaseModels;
+using Dulo.BasisModels;
 
 namespace Dulo.Actions
 {
