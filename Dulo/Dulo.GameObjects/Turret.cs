@@ -1,15 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Dulo.BaseModels;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework;
-using Dulo.InputModel;
-using FarseerPhysics.Dynamics;
-using FarseerPhysics.Dynamics.Joints;
-using System.IO;
+using Dulo.BaseModels.SettingsModels;
 using Dulo.GameObjects.Guns;
 
 namespace Dulo.GameObjects
@@ -22,13 +15,16 @@ namespace Dulo.GameObjects
 
         private float percentageError = 0.034f;
 
-        public BaseGun gun;
+        private BaseGun gun;
+        private readonly MouseProcessor mouseProcessor;
 
-        public Turret(World world, Texture2D physicalTextureMap, Texture2D physicalTextureMapBullet) : base(world, physicalTextureMap)
+        public Turret(SettingBaseAnimationModel settingBaseAnimation, MouseProcessor mouseProcessor, BaseGun gun) : base(settingBaseAnimation)
         {
-            Body.AngularDamping = 50f;
+            this.gun = gun; 
+            this.mouseProcessor = mouseProcessor;
 
-            gun = new DefaultGun(world, physicalTextureMapBullet);
+            Body.Mass = 0.1f;
+            Body.AngularDamping = 15f;
         }
 
         public override void Update()
@@ -38,24 +34,19 @@ namespace Dulo.GameObjects
             if (!IsLookAtMouse)
                 return;
 
-            var mouseAngle = GetMouseAngle();
+            var mouseAngle = mouseProcessor.GetMouseAngle(Position);
 
             if (Math.Abs(mouseAngle - Angle) > percentageError)
-                RotateTurretToCursor(mouseAngle);             
+                RotateTurretToCursor(mouseAngle);
 
             gun.Update();
         }
 
-        private float GetMouseAngle()
+        public override void Draw(SpriteBatch canvas)
         {
-            var mouseState = Mouse.GetState();
-           
-            var angle = (float)Math.Atan2((mouseState.Y - Position.Y), (mouseState.X - Position.X)) + MathHelper.PiOver2;
+            base.Draw(canvas);
 
-            angle = angle >= 0 ? MathHelper.TwoPi - angle : Math.Abs(angle);
-            angle = MathHelper.TwoPi - angle;
-
-            return angle;
+            gun.Draw(canvas);
         }
 
         private void RotateTurretToCursor(float mouseAngle)
@@ -79,11 +70,9 @@ namespace Dulo.GameObjects
             gun.Fire(Body.Position + GetDirection() * 0.5f, Body.Rotation);
         }
 
-        public override void Draw(SpriteBatch canvas)
+        public void ChangeGun(BaseGun gun)
         {
-            base.Draw(canvas);
-
-            gun.Draw(canvas);
+            this.gun = gun;
         }
     }
 }

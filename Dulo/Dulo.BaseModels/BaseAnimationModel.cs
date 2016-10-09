@@ -1,7 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
+using Dulo.BaseModels.SettingsModels;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -9,21 +8,29 @@ namespace Dulo.BaseModels
 {
     public abstract class BaseAnimationModel : BaseModel
     {
-        private Dictionary<string, Animation> animations = new Dictionary<string, Animation>();
+        private readonly Dictionary<string, Animation> animations = new Dictionary<string, Animation>();
 
-        private string animationName = "";
+        private string currentAnimationName = "";
 
-        public BaseAnimationModel(World world, Texture2D physicalTextureMap) : base(world, physicalTextureMap)
+        protected BaseAnimationModel(World world, Texture2D physicalTextureMap, Animation defauleAnimation) : base(world, physicalTextureMap)
         {
+            AddNewAnimation(defauleAnimation, "default");
+            ChangeAnimation("default");
+        }
+
+        protected BaseAnimationModel(SettingBaseAnimationModel settingBaseAnimationModel) : base(settingBaseAnimationModel)
+        {
+            AddNewAnimation(settingBaseAnimationModel.DefaultAnimation, "default");
+            ChangeAnimation("default");
         }
 
         public override void Update()
         {
-            if (animations.Count == 0 || string.IsNullOrEmpty(animationName))
+            if (animations.Count == 0 || string.IsNullOrEmpty(currentAnimationName))
                 return;
 
-            animations[animationName].Update();
-            texture = animations[animationName].CurrentFrame;
+            animations[currentAnimationName].Update();
+            Texture = animations[currentAnimationName].CurrentFrame;
         }
 
         public void AddNewAnimation(Animation animation, string animationName)
@@ -44,8 +51,8 @@ namespace Dulo.BaseModels
             if (animationName != "")
                 animations[animationName].Stop();
 
-            this.animationName = animationName;
-            texture = animations[animationName].CurrentFrame;
+            currentAnimationName = animationName;
+            Texture = animations[animationName].CurrentFrame;
             return true;
         }
 
@@ -57,26 +64,23 @@ namespace Dulo.BaseModels
 
         public void AnimationPlay()
         {
-            if (string.IsNullOrEmpty(animationName))
-                throw new Exception("Aimation not selected!. (call ChangeAnimation before call AnimationPlay)");
-
-            animations[animationName].Play();
+            animations[currentAnimationName].Play();
         }
 
         public void AnimationPause()
         {
-            if (string.IsNullOrEmpty(animationName))
+            if (string.IsNullOrEmpty(currentAnimationName))
                 return;
 
-            animations[animationName].Pause();
+            animations[currentAnimationName].Pause();
         }
 
         public void AnimationStop()
         {
-            if (string.IsNullOrEmpty(animationName))
+            if (string.IsNullOrEmpty(currentAnimationName))
                 return;
 
-            animations[animationName].Stop();
+            animations[currentAnimationName].Stop();
         }
     }
 }

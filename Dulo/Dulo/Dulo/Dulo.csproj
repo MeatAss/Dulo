@@ -76,6 +76,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
+    <Compile Include="GameObjectBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />
@@ -84,10 +85,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Dulo.Actions\Dulo.Actions.csproj">
-      <Project>{4f73b1e8-f631-48d8-b0c7-838cc0b09973}</Project>
-      <Name>Dulo.Actions</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Dulo.BaseModels\Dulo.BaseModels.csproj">
       <Project>{637ad84f-7c9b-480e-a43f-9c1c5d0a91a6}</Project>
       <Name>Dulo.BaseModels</Name>

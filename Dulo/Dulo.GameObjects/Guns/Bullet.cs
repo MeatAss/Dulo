@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Dulo.BaseModels;
-using Dulo.Actions;
+using Dulo.GameObjects.SettingsModels;
 using Microsoft.Xna.Framework;
-using FarseerPhysics.Dynamics;
-using Microsoft.Xna.Framework.Graphics;
 
 namespace Dulo.GameObjects.Guns
 {
@@ -16,17 +11,17 @@ namespace Dulo.GameObjects.Guns
     {
         public event BulledDeath OnBulletDeath;
 
-        private Mover mover;
-
-        public bool IsMoving { get; set; } = false;
-
         public float DeathTime { get; set; } = 5000;
         private long beginTime;
 
-        public Bullet(World world, Texture2D physicalTextureMap) : base(world, physicalTextureMap)
+        private readonly SettingBullet settingBaseAnimationModel;
+
+        public Bullet(SettingBullet settingBullet, Vector2 startPosition, float startDirection) : base(settingBullet)
         {
-            mover = new Mover(this, 0, 0);
+            settingBaseAnimationModel = settingBullet;
+
             Body.Restitution = 1;
+            Fire(startPosition, startDirection, settingBullet.Speed);
         }
 
         public override void Update()
@@ -37,18 +32,12 @@ namespace Dulo.GameObjects.Guns
                 OnBulletDeath?.Invoke(this);
         }
 
-        public override void Draw(SpriteBatch canvas)
-        {
-            base.Draw(canvas);
-        }
-
-        public void Fire(Vector2 startPosition, float startDirection, float speed)
+        private void Fire(Vector2 startPosition, float startDirection, float speed)
         {
             Body.Position = startPosition;
             Body.Rotation = startDirection;
-            mover.MoveTo(speed);
+            MoveTo(speed);
 
-            IsMoving = true;
             beginTime = DateTime.Now.ToMilliseconds();
         }
     }

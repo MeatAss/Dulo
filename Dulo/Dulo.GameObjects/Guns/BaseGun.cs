@@ -1,73 +1,51 @@
 ﻿using Dulo.BaseModels;
 using Dulo.BasisModels;
-using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Dulo.GameObjects.SettingsModels;
 
 namespace Dulo.GameObjects.Guns
 {
     public abstract class BaseGun : BaseBasis
     {
-        private List<Bullet> Bullets { get; set; } = new List<Bullet>();
-
-        protected float bulletSpeed = 0.5f;
-
-        protected int countBullets { get; set; } = 20;
-
-        protected float delayShot { get; set; } = 100;
-
-
-        private World world;
-        private Texture2D texture;
+        private List<Bullet> Bullets { get; } = new List<Bullet>();
 
         private long lastShotTime;
 
-
-        public Animation DefaultBulletAnimation { get; set; }
-
-        public Animation ExplosionBulletAnimation { get; set; }
-
-        public Animation EndingLifetimeBulletAnimation { get; set; }
-
-        public Animation ColisionBulletAnimation { get; set; }
+        private readonly SettingBullet settingBullet;
 
 
-        public BaseGun(World world, Texture2D physicalTextureMapBullet)
+        public int CountBullets { get; protected set; } = 20;
+
+        public float DelayShot { get; protected set; } = 100;
+
+    
+        protected BaseGun(SettingBullet settingBullet)
         {
-            this.world = world;
-            texture = physicalTextureMapBullet;
+            this.settingBullet = settingBullet;
 
             lastShotTime = DateTime.Now.ToMilliseconds();
         }
 
         public void Fire(Vector2 startPosition, float startDirection)
         {
-            if (Bullets.Count >= countBullets || DateTime.Now.ToMilliseconds() - lastShotTime < delayShot)
+            if (Bullets.Count >= CountBullets || DateTime.Now.ToMilliseconds() - lastShotTime < DelayShot)
                 return;
 
-            var bullet = CreateDefaultBullet(startPosition, startDirection);
+            var bullet = CreateDefaultBullet(settingBullet, startPosition, startDirection);
 
             Bullets.Add(bullet);
-            bullet.Fire(startPosition, startDirection, bulletSpeed);
 
             lastShotTime = DateTime.Now.ToMilliseconds();
         }
 
-        private Bullet CreateDefaultBullet(Vector2 startPosition, float startDirection)
+        private Bullet CreateDefaultBullet(SettingBullet settingBullet, Vector2 startPosition, float startDirection)
         {
-            var bullet = new Bullet(world, texture);
+            var bullet = new Bullet(settingBullet, startPosition, startDirection);
             bullet.OnBulletDeath += Bullet_OnBulletDeath;
 
-            if (DefaultBulletAnimation == null)
-                throw new Exception("Initialize DefaultBulletAnimation!");
-
-            bullet.AddNewAnimation(DefaultBulletAnimation, "default");
-            bullet.ChangeAnimation("default");
             bullet.AnimationPlay();
 
             return bullet;
@@ -75,7 +53,7 @@ namespace Dulo.GameObjects.Guns
 
         private void Bullet_OnBulletDeath(Bullet bullet)
         {
-            world.RemoveBody(bullet.Body);
+            //World.RemoveBody(bullet.Body);
             Bullets.Remove(bullet);
         }
 

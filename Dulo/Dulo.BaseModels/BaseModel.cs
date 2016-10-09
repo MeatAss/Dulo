@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using Dulo.BaseModels.SettingsModels;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using FarseerPhysics.Dynamics;
@@ -16,12 +15,13 @@ namespace Dulo.BaseModels
 {
     public abstract class BaseModel : BaseBasis
     {
-        protected Texture2D texture;
+        protected Texture2D Texture { get; set; }
 
         public Body Body { get; private set; }
-        protected World world;
 
-        protected Vector2 center;
+        protected World World { get; }
+
+        protected Vector2 Center { get; private set; }
 
         public Vector2 Position
         {
@@ -44,24 +44,41 @@ namespace Dulo.BaseModels
                 {
                     return Body.Rotation % MathHelper.TwoPi;
                 }
-                else
-                {
-                    return MathHelper.TwoPi - Math.Abs(Body.Rotation) % MathHelper.TwoPi;
-                }
+
+                return MathHelper.TwoPi - Math.Abs(Body.Rotation) % MathHelper.TwoPi;
             }
         }
 
-
-        public BaseModel(World world, Texture2D physicalTextureMap)
+        public float LinearDamping
         {
-            this.world = world;
-            Initialize(physicalTextureMap);
+            get { return Body.LinearDamping; }
+
+            set { Body.LinearDamping = value; }
+        }
+
+        public float AngularDamping
+        {
+            get { return Body.AngularDamping; }
+
+            set { Body.AngularDamping = value; }
         }
 
 
+        protected BaseModel(World world, Texture2D physicalTextureMap)
+        {
+            World = world;
+            Initialize(physicalTextureMap);
+        }
+
+        protected BaseModel(SettingBaseModel settingBaseModel)
+        {
+            World = settingBaseModel.World;
+            Initialize(settingBaseModel.PhysicalTextureMap);
+        }
+
         public override void Draw(SpriteBatch canvas)
         { 
-            canvas.Draw(texture, ConvertUnits.ToDisplayUnits(Body.Position), null, Color.White, Body.Rotation, center, 1f, SpriteEffects.None, 0f);           
+            canvas.Draw(Texture, ConvertUnits.ToDisplayUnits(Body.Position), null, Color.White, Body.Rotation, Center, 1f, SpriteEffects.None, 0f);           
         }
 
         public Vector2 GetDirection()
@@ -70,11 +87,22 @@ namespace Dulo.BaseModels
                 (float)Math.Sin(Body.Rotation - Math.PI / 2));
         }
 
+        public void Rotate(float speed)
+        {
+            Body.ApplyTorque(speed);
+        }
+
+        public void MoveTo(float speed)
+        {
+            Body.ApplyForce(GetDirection() * speed);
+        }
+
+
         private void Initialize(Texture2D physicalTextureMap)
         {
             var textureVertices = CreateVerticesFromPhysicalTextureMap(physicalTextureMap);
 
-            center = GetCenterFromVertices(textureVertices);
+            Center = GetCenterFromVertices(textureVertices);
 
             textureVertices = SimplifyTools.ReduceByDistance(textureVertices, 4f);
 
@@ -85,7 +113,7 @@ namespace Dulo.BaseModels
 
         private Vertices CreateVerticesFromPhysicalTextureMap(Texture2D physicalTextureMap)
         {
-            uint[] data = new uint[physicalTextureMap.Width * physicalTextureMap.Height];
+            var data = new uint[physicalTextureMap.Width * physicalTextureMap.Height];
             physicalTextureMap.GetData(data);
 
             return PolygonTools.CreatePolygon(data, physicalTextureMap.Width, false);
@@ -94,7 +122,7 @@ namespace Dulo.BaseModels
         
         private Vector2 GetCenterFromVertices(Vertices vertices)
         {
-            Vector2 centroid = -vertices.GetCentroid();
+            var centroid = -vertices.GetCentroid();
             vertices.Translate(ref centroid);
 
             return -centroid;
@@ -102,9 +130,9 @@ namespace Dulo.BaseModels
 
         private List<Vertices> TriangulateVertices(Vertices vertices, TriangulationAlgorithm algorithm)
         {
-            List<Vertices> list = Triangulate.ConvexPartition(vertices, algorithm);
+            var list = Triangulate.ConvexPartition(vertices, algorithm);
 
-            Vector2 vertScale = new Vector2(ConvertUnits.ToSimUnits(1)) * 1f;
+            var vertScale = new Vector2(ConvertUnits.ToSimUnits(1)) * 1f;
             list.ForEach((item) => item.Scale(ref vertScale));
 
             return list;
@@ -112,7 +140,7 @@ namespace Dulo.BaseModels
 
         private Body CreateBody(List<Vertices> verticesList)
         {
-            var result = BodyFactory.CreateCompoundPolygon(world, verticesList, 1f, BodyType.Dynamic);
+            var result = BodyFactory.CreateCompoundPolygon(World, verticesList, 1f, BodyType.Dynamic);
             result.BodyType = BodyType.Dynamic;
             return result;
         }
