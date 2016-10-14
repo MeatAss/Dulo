@@ -67,6 +67,7 @@
     <Compile Include="SettingsModels\SettingBullet.cs" />
     <Compile Include="Tank.cs" />
     <Compile Include="TankBody.cs" />
+    <Compile Include="Track.cs" />
     <Compile Include="Turret.cs" />
   </ItemGroup>
   <ItemGroup>

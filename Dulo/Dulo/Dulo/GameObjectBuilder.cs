@@ -30,10 +30,30 @@ namespace Dulo
             var keyMap = new KeyMap() { Down = Keys.S, Left = Keys.A, Right = Keys.D, Up = Keys.W, Fire = Keys.LeftShift};
             var tankBody = CreateTankBody();
             var turret = CreateTurret();
+            var leftTrack = CreateTrack();
+            var rightTrack = CreateTrack();
 
-            var tank = new Tank(world, tankBody, turret, keyMap);
+            var tank = new Tank(world, tankBody, turret, leftTrack, rightTrack, keyMap);
 
             return tank;
+        }
+
+        private Track CreateTrack()
+        {
+            var trackAnimation = CreateTrackDefaultAnimation();
+            var settingTankBody = new SettingBaseAnimationModel(world, trackAnimation.CurrentFrame, trackAnimation);
+
+            return new Track(settingTankBody);
+        }
+
+        private Animation CreateTrackDefaultAnimation()
+        {
+            var animation = new Animation();
+
+            for (var i = 0; i < 16; i++)
+                animation.Frames.Add(contentManager.Load<Texture2D>($"track/Track{i}"));
+
+            return animation;
         }
 
         private Turret CreateTurret()
@@ -61,7 +81,7 @@ namespace Dulo
 
             var tankBody = new TankBody(settingTankBody);
 
-            tankBody.SpeedMoving = 15f;
+            tankBody.SpeedMoving = 300f;
             tankBody.SpeedRotating = 7f;
             tankBody.LinearDamping = 5f;
             tankBody.AngularDamping = 18f;
@@ -73,8 +93,10 @@ namespace Dulo
         {
             var  animation = new Animation();
 
-            for (var i = 0; i < 14; i++)
-                animation.Frames.Add(contentManager.Load<Texture2D>($"tank/Tank{i}"));
+            //for (var i = 0; i < 14; i++)
+            //    animation.Frames.Add(contentManager.Load<Texture2D>($"tank/Tank{i}"));
+
+            animation.Frames.Add(contentManager.Load<Texture2D>($"tankBody/TankBody"));
 
             return animation;
         }

@@ -42,16 +42,14 @@ namespace Dulo
             InitialzeWorld();
 
             tank = new GameObjectBuilder(world, View, Content).CreateDefaultTank();
-
         }
-
 
         private void InitialzeWorld()
         {
             View = Matrix.Identity;
 
             Matrix matRotation = Matrix.CreateRotationZ(0);
-            Matrix matZoom = Matrix.CreateScale(0.3f);
+            Matrix matZoom = Matrix.CreateScale(1f);
 
             Vector3 translateCenter = new Vector3(new Vector2(ConvertUnits.ToSimUnits(GraphicsDevice.Viewport.Width / 2f), ConvertUnits.ToSimUnits(GraphicsDevice.Viewport.Height / 2f)), 0f);
 

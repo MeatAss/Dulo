@@ -23,7 +23,7 @@ namespace Dulo.GameObjects
             this.gun = gun; 
             this.mouseProcessor = mouseProcessor;
 
-            Body.Mass = 0.1f;
+            Body.Mass = 0.00000001f;
             Body.AngularDamping = 15f;
         }
 

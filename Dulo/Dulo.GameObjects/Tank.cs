@@ -12,6 +12,8 @@ namespace Dulo.GameObjects
     {
         private readonly Turret turret;
         private readonly TankBody tankBody;
+        private readonly Track leftTrack;
+        private readonly Track rightTrack;
 
         private readonly IMovingKeyMap movingKeyMap;
         private readonly IShootingKeyMap shootingKeyMap;
@@ -20,21 +22,40 @@ namespace Dulo.GameObjects
         public float TurretSpeedRotation { get; set; }
 
 
-        public Tank(World world, TankBody tankBody, Turret turret, KeyMap keyMap)
+        public Tank(World world, TankBody tankBody, Turret turret, Track leftTrack, Track rightTrack,  KeyMap keyMap)
         {
             movingKeyMap = keyMap;
             shootingKeyMap = keyMap;
 
             this.tankBody = tankBody;
             this.turret = turret;
+            this.leftTrack = leftTrack;
+            this.rightTrack = rightTrack;
+            
+            CreateRevoluteJointTurret(world, turret, new Vector2(0, 9.7f));
 
-            var revoluteJoint = new RevoluteJoint(tankBody.Body, turret.Body, FarseerPhysics.ConvertUnits.ToSimUnits(new Vector2(0, 9.7f)));
-
-            revoluteJoint.LocalAnchorA -= FarseerPhysics.ConvertUnits.ToSimUnits(new Vector2(0, 9.7f));
-            world.AddJoint(revoluteJoint);
-            tankBody.Body.IgnoreCollisionWith(turret.Body);
-
+            float positionTrack = 36.5f;
+            CreateWeldJointTrack(world, leftTrack, new Vector2(-positionTrack, 0f));
+            CreateWeldJointTrack(world, rightTrack, new Vector2(positionTrack, 0f));
+            
             InitializeKeyListener();
+        }
+
+        private void CreateRevoluteJointTurret(World world, Turret turret, Vector2 position)
+        {
+            var jointBodyTurret = new RevoluteJoint(tankBody.Body, turret.Body, FarseerPhysics.ConvertUnits.ToSimUnits(position));
+
+            jointBodyTurret.LocalAnchorA -= FarseerPhysics.ConvertUnits.ToSimUnits(position);
+            world.AddJoint(jointBodyTurret);
+            tankBody.Body.IgnoreCollisionWith(turret.Body);
+        }
+
+        private void CreateWeldJointTrack(World world, Track track, Vector2 position)
+        {
+            var jointBodyTrack = new WeldJoint(tankBody.Body, track.Body, FarseerPhysics.ConvertUnits.ToSimUnits(position), Vector2.Zero);
+
+            world.AddJoint(jointBodyTrack);
+            tankBody.Body.IgnoreCollisionWith(track.Body);
         }
 
         private void InitializeKeyListener()
@@ -51,7 +72,9 @@ namespace Dulo.GameObjects
         public override void Draw(SpriteBatch canvas)
         {        
             base.Draw(canvas);
-           
+
+            leftTrack.Draw(canvas);
+            rightTrack.Draw(canvas);
             tankBody.Draw(canvas);
             turret.Draw(canvas);
         }
@@ -62,6 +85,8 @@ namespace Dulo.GameObjects
 
             keyListener.Check(Keyboard.GetState());
 
+            leftTrack.Update();
+            rightTrack.Update();
             tankBody.Update();
             turret.Update();
         }

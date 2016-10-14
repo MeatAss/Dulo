@@ -35,6 +35,7 @@ namespace Dulo.GameObjects
 
         public TankBody(SettingBaseAnimationModel settingBaseAnimationModel) : base(settingBaseAnimationModel)
         {
+            Body.Mass = 20f;
         }
     }
 }
