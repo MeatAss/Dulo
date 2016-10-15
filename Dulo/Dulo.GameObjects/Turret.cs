@@ -10,7 +10,7 @@ namespace Dulo.GameObjects
 {
     public class Turret : BaseAnimationModel
     {
-        //public bool IsLookAtMouse { get; set; } = true;
+        public bool IsLookAtMouse { get; set; } = true;
 
         public float SpeedRotation { get; set; } = 0.5f;
 
@@ -18,11 +18,9 @@ namespace Dulo.GameObjects
 
         private BaseGun gun;
         private readonly MouseProcessor mouseProcessor;
-        private IInput input;
 
         public Turret(SettingBaseAnimationModel settingBaseAnimation, MouseProcessor mouseProcessor, BaseGun gun) : base(settingBaseAnimation)
         {
-            this.input = input;
 
             this.gun = gun; 
             this.mouseProcessor = mouseProcessor;
@@ -34,14 +32,14 @@ namespace Dulo.GameObjects
         public override void Update()
         {
             base.Update();
-            
-            //if (!IsLookAtMouse)
-            //    return;
 
-            //var mouseAngle = mouseProcessor.GetMouseAngle(Position);
+            if (IsLookAtMouse)
+            {
+                var mouseAngle = mouseProcessor.GetMouseAngle(Position);
 
-            //if (Math.Abs(mouseAngle - Angle) > percentageError)
-            //    RotateTurretToCursor(mouseAngle);
+                if (Math.Abs(mouseAngle - Angle) > percentageError)
+                    RotateTurretToCursor(mouseAngle);
+            }
 
             gun.Update();
         }
@@ -53,21 +51,21 @@ namespace Dulo.GameObjects
             gun.Draw(canvas);
         }
 
-        //private void RotateTurretToCursor(float mouseAngle)
-        //{
-        //    if (mouseAngle - Angle < 0)
-        //    {
-        //        var direction = MathHelper.TwoPi + mouseAngle - Angle >= MathHelper.Pi ? -1 : 1;
+        private void RotateTurretToCursor(float mouseAngle)
+        {
+            if (mouseAngle - Angle < 0)
+            {
+                var direction = MathHelper.TwoPi + mouseAngle - Angle >= MathHelper.Pi ? -1 : 1;
 
-        //        Body.ApplyTorque(SpeedRotation * direction);
-        //    }
-        //    else
-        //    {
-        //        var direction = mouseAngle - Angle > MathHelper.Pi ? -1 : 1;
+                Body.ApplyTorque(SpeedRotation * direction);
+            }
+            else
+            {
+                var direction = mouseAngle - Angle > MathHelper.Pi ? -1 : 1;
 
-        //        Body.ApplyTorque(SpeedRotation * direction);
-        //    }
-        //}
+                Body.ApplyTorque(SpeedRotation * direction);
+            }
+        }
 
         public Bullet Fire()
         {

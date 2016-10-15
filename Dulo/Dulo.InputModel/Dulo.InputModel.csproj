@@ -60,8 +60,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConditionAction.cs" />
+    <Compile Include="InputSystem\ConcreteInputSystems\EnumValueModel.cs" />
     <Compile Include="InputSystem\ConcreteInputSystems\KeyboardInputSystem.cs" />
     <Compile Include="InputSystem\ConcreteInputSystems\KeyboardInputSystemMap.cs" />
+    <Compile Include="InputSystem\ConcreteInputSystems\KeyboardInputWithMouseSystemMap.cs" />
+    <Compile Include="InputSystem\ConcreteInputSystems\KeyboardWithMouseInputSystem.cs" />
+    <Compile Include="InputSystem\ConcreteInputSystems\MouseKeysState.cs" />
     <Compile Include="InputSystem\IInput.cs" />
     <Compile Include="InputSystem\InputState.cs" />
     <Compile Include="KeyListener.cs" />

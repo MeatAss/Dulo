@@ -29,9 +29,39 @@ namespace Dulo
 
         public Tank CreateDefaultTank()
         {
+            //var keyMap = GetKeyboardInputSystemMap();
+            var keyMap = GetKeyboardInputWithMouseSystemMap();
+
+            var tankBody = CreateTankBody();
+            var turret = CreateTurret();
+            var leftTrack = CreateTrack();
+            var rightTrack = CreateTrack();
+
+            var tank = new Tank(world, tankBody, turret, leftTrack, rightTrack, new KeyboardWithMouseInputSystem(keyMap));
+
+            return tank;
+        }
+
+        private List<KeyboardInputWithMouseSystemMap> GetKeyboardInputWithMouseSystemMap()
+        {
+            var keyMap = new List<KeyboardInputWithMouseSystemMap>();
+
+            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.A, Operation = GameOperation.TurnLeft });
+            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.D, Operation = GameOperation.TurnRight });
+            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.W, Operation = GameOperation.MoveUp });
+            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.S, Operation = GameOperation.MoveDown });
+            keyMap.Add(new KeyboardInputWithMouseSystemMap { MouseKey = MouseKeys.LeftButton, Operation = GameOperation.Fire });
+            //keyMap.Add(new KeyboardInputWithMouseSystemMap { MouseKey = MouseKeys.XButton2, Operation = GameOperation.RotateTurretLeft });
+            //keyMap.Add(new KeyboardInputWithMouseSystemMap { MouseKey = MouseKeys.XButton1, Operation = GameOperation.RotateTurretRight });
+
+            return keyMap;
+        }
+
+        private List<KeyboardInputSystemMap> GetKeyboardInputSystemMap()
+        {
             var keyMap = new List<KeyboardInputSystemMap>();
 
-            keyMap.Add(new KeyboardInputSystemMap {Key = Keys.A, Operation = GameOperation.TurnLeft});
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.A, Operation = GameOperation.TurnLeft });
             keyMap.Add(new KeyboardInputSystemMap { Key = Keys.D, Operation = GameOperation.TurnRight });
             keyMap.Add(new KeyboardInputSystemMap { Key = Keys.W, Operation = GameOperation.MoveUp });
             keyMap.Add(new KeyboardInputSystemMap { Key = Keys.S, Operation = GameOperation.MoveDown });
@@ -39,14 +69,7 @@ namespace Dulo
             keyMap.Add(new KeyboardInputSystemMap { Key = Keys.Left, Operation = GameOperation.RotateTurretLeft });
             keyMap.Add(new KeyboardInputSystemMap { Key = Keys.Right, Operation = GameOperation.RotateTurretRight });
 
-            var tankBody = CreateTankBody();
-            var turret = CreateTurret();
-            var leftTrack = CreateTrack();
-            var rightTrack = CreateTrack();
-
-            var tank = new Tank(world, tankBody, turret, leftTrack, rightTrack, new KeyboardInputSystem(keyMap));
-
-            return tank;
+            return keyMap;
         }
 
         private Track CreateTrack()
