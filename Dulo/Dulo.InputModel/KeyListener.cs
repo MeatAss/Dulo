@@ -3,38 +3,40 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Dulo.InputModel.InputSystem;
 
 namespace Dulo.InputModel
 {
     public class KeyListener
     {
-        private List<ConditionAction> conditionActionList;
+        private readonly List<ConditionAction> conditionActionList;
 
-        private KeyboardState keysState;
+        private InputState inputState;
+
 
         public KeyListener()
         {
             conditionActionList = new List<ConditionAction>();
         }
 
-        public void Add(Keys bindKey, Action action)
+
+        public void Add(GameOperation bindKey, Action action)
         {
             conditionActionList.Add(new ConditionAction
             {
-                Condition = () => keysState.IsKeyDown(bindKey),
+                Condition = () => inputState.IsKeyDown(bindKey),
                 Action = action
             });
         }
 
-        public void Check(KeyboardState keysState)
+        public void Check(InputState inputState)
         {
-            this.keysState = keysState;
+            this.inputState = inputState;
 
-            conditionActionList.ForEach((item) =>
-            {
-                if (item.Condition())
-                    item.Action();
-            });
+            conditionActionList
+                .Where(cond => cond.Condition())
+                .ToList()
+                .ForEach(cond => cond.Action());
         }
     }
 }

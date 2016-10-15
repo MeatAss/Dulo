@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Dulo.InputModel
 {
-    public class KeyMap : IMovingKeyMap, IShootingKeyMap
+    public class KeyMap
     {
         public Keys Up { get; set; }
 
@@ -15,6 +15,10 @@ namespace Dulo.InputModel
         public Keys Left { get; set; }
 
         public Keys Right { get; set; }
+
+        public Keys TurnTurretRight { get; set; }
+
+        public Keys TurnTurretLeft { get; set; }
 
         public Keys Fire { get; set; }
     }

@@ -1,11 +1,13 @@
-﻿using Dulo.GameObjects;
+﻿using System.Collections.Generic;
+using Dulo.GameObjects;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Dulo.BaseModels;
 using Dulo.BaseModels.SettingsModels;
 using Dulo.GameObjects.Guns;
 using Dulo.GameObjects.SettingsModels;
-using Dulo.InputModel;
+using Dulo.InputModel.InputSystem;
+using Dulo.InputModel.InputSystem.ConcreteInputSystems;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -26,14 +28,23 @@ namespace Dulo
         }
 
         public Tank CreateDefaultTank()
-        {          
-            var keyMap = new KeyMap() { Down = Keys.S, Left = Keys.A, Right = Keys.D, Up = Keys.W, Fire = Keys.LeftShift};
+        {
+            var keyMap = new List<KeyboardInputSystemMap>();
+
+            keyMap.Add(new KeyboardInputSystemMap {Key = Keys.A, Operation = GameOperation.TurnLeft});
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.D, Operation = GameOperation.TurnRight });
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.W, Operation = GameOperation.MoveUp });
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.S, Operation = GameOperation.MoveDown });
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.LeftShift, Operation = GameOperation.Fire });
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.Left, Operation = GameOperation.RotateTurretLeft });
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.Right, Operation = GameOperation.RotateTurretRight });
+
             var tankBody = CreateTankBody();
             var turret = CreateTurret();
             var leftTrack = CreateTrack();
             var rightTrack = CreateTrack();
 
-            var tank = new Tank(world, tankBody, turret, leftTrack, rightTrack, keyMap);
+            var tank = new Tank(world, tankBody, turret, leftTrack, rightTrack, new KeyboardInputSystem(keyMap));
 
             return tank;
         }
@@ -82,7 +93,7 @@ namespace Dulo
             var tankBody = new TankBody(settingTankBody);
 
             tankBody.SpeedMoving = 300f;
-            tankBody.SpeedRotating = 7f;
+            tankBody.SpeedRotation = 7f;
             tankBody.LinearDamping = 5f;
             tankBody.AngularDamping = 18f;
 

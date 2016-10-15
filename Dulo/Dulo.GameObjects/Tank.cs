@@ -4,7 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Dulo.InputModel;
 using Dulo.BasisModels;
-using Microsoft.Xna.Framework.Input;
+using Dulo.InputModel.InputSystem;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Dynamics.Joints;
 
@@ -17,11 +17,9 @@ namespace Dulo.GameObjects
         private readonly Track leftTrack;
         private readonly Track rightTrack;
 
-        private readonly IMovingKeyMap movingKeyMap;
-        private readonly IShootingKeyMap shootingKeyMap;
         private KeyListener keyListener;
 
-        public float TurretSpeedRotation { get; set; }
+        private readonly IInput input;
 
         public Vector2 Position
         {
@@ -30,15 +28,14 @@ namespace Dulo.GameObjects
             set { tankBody.Position = value; }
         }
 
-        public Tank(World world, TankBody tankBody, Turret turret, Track leftTrack, Track rightTrack, KeyMap keyMap)
+        public Tank(World world, TankBody tankBody, Turret turret, Track leftTrack, Track rightTrack, IInput input)
         {
-            movingKeyMap = keyMap;
-            shootingKeyMap = keyMap;
-
             this.tankBody = tankBody;
             this.turret = turret;
             this.leftTrack = leftTrack;
             this.rightTrack = rightTrack;
+
+            this.input = input;
 
             CreateRevoluteJointTurret(world, turret, new Vector2(0, 9.7f));
 
@@ -68,12 +65,15 @@ namespace Dulo.GameObjects
         private void InitializeKeyListener()
         {
             keyListener = new KeyListener();
-            keyListener.Add(movingKeyMap.Up, () => tankBody.MoveTo(tankBody.SpeedMoving));
-            keyListener.Add(movingKeyMap.Down, () => tankBody.MoveTo(-tankBody.SpeedMoving * 0.6f));
-            keyListener.Add(movingKeyMap.Left, () => tankBody.Rotate(-tankBody.SpeedRotating));
-            keyListener.Add(movingKeyMap.Right, () => tankBody.Rotate(tankBody.SpeedRotating));
+            keyListener.Add(GameOperation.MoveUp, () => tankBody.MoveTo(tankBody.SpeedMoving));
+            keyListener.Add(GameOperation.MoveDown, () => tankBody.MoveTo(-tankBody.SpeedMoving * 0.6f));
+            keyListener.Add(GameOperation.TurnLeft, () => tankBody.Rotate(-tankBody.SpeedRotation));
+            keyListener.Add(GameOperation.TurnRight, () => tankBody.Rotate(tankBody.SpeedRotation));
 
-            keyListener.Add(shootingKeyMap.Fire, Fire);
+            keyListener.Add(GameOperation.RotateTurretLeft, () => turret.Rotate(-turret.SpeedRotation));
+            keyListener.Add(GameOperation.RotateTurretRight, () => turret.Rotate(turret.SpeedRotation));
+
+            keyListener.Add(GameOperation.Fire, Fire);
         }
 
         public override void Draw(SpriteBatch canvas)
@@ -90,7 +90,7 @@ namespace Dulo.GameObjects
         {
             base.Update();
 
-            keyListener.Check(Keyboard.GetState());
+            keyListener.Check(input.GetState());
 
             leftTrack.Update();
             rightTrack.Update();

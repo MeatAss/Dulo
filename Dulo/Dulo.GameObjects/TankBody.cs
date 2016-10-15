@@ -7,7 +7,7 @@ namespace Dulo.GameObjects
     public class TankBody : BaseAnimationModel
     {
         private float speedMoving;
-        private float speedRotating;
+        private float speedRotation;
 
         public float SpeedMoving
         {
@@ -21,15 +21,15 @@ namespace Dulo.GameObjects
             }
         }
 
-        public float SpeedRotating
+        public float SpeedRotation
         {
             get
             {
-                return speedRotating;
+                return speedRotation;
             }
             set
             {
-                speedRotating = value < 0 ? 0 : value;
+                speedRotation = value < 0 ? 0 : value;
             }
         }
 

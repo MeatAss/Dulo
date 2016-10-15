@@ -60,8 +60,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ConditionAction.cs" />
-    <Compile Include="IMovingKeyMap.cs" />
-    <Compile Include="IShootingKeyMap.cs" />
+    <Compile Include="InputSystem\ConcreteInputSystems\KeyboardInputSystem.cs" />
+    <Compile Include="InputSystem\ConcreteInputSystems\KeyboardInputSystemMap.cs" />
+    <Compile Include="InputSystem\IInput.cs" />
+    <Compile Include="InputSystem\InputState.cs" />
     <Compile Include="KeyListener.cs" />
     <Compile Include="KeyMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
