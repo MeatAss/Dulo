@@ -18,6 +18,7 @@ namespace Dulo
         public Matrix SimView;
         public Matrix View;
         private Tank tank;
+        private Tank tank1;
         private FrameCounter fps;
 
         private SpriteFont font;
@@ -42,6 +43,10 @@ namespace Dulo
             InitialzeWorld();
 
             tank = new GameObjectBuilder(world, View, Content).CreateDefaultTank();
+
+            tank1 = new GameObjectBuilder(world, View, Content).CreateDefaultTank();
+
+            tank1.Position = new Vector2(-200, -200);
         }
 
         private void InitialzeWorld()
@@ -69,6 +74,7 @@ namespace Dulo
         protected override void Update(GameTime gameTime)
         {            
             tank.Update();
+            tank1.Update();
 
             world.Step(Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, (1f / 30f)));
             base.Update(gameTime);
@@ -81,6 +87,7 @@ namespace Dulo
 
             spriteBatch.Begin(0, null, null, null, null, null, View);
             tank.Draw(spriteBatch);
+            tank1.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

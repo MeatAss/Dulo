@@ -29,16 +29,18 @@ namespace Dulo.GameObjects.Guns
             lastShotTime = DateTime.Now.ToMilliseconds();
         }
 
-        public void Fire(Vector2 startPosition, float startDirection)
+        public Bullet Fire(Vector2 startPosition, float startDirection)
         {
             if (Bullets.Count >= CountBullets || DateTime.Now.ToMilliseconds() - lastShotTime < DelayShot)
-                return;
+                return null;
 
             var bullet = CreateDefaultBullet(settingBullet, startPosition, startDirection);
 
             Bullets.Add(bullet);
 
             lastShotTime = DateTime.Now.ToMilliseconds();
+
+            return bullet;
         }
 
         private Bullet CreateDefaultBullet(SettingBullet settingBullet, Vector2 startPosition, float startDirection)

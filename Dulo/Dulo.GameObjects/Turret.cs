@@ -65,9 +65,9 @@ namespace Dulo.GameObjects
             }
         }
 
-        public void Fire()
+        public Bullet Fire()
         {
-            gun.Fire(Body.Position + GetDirection() * 0.5f, Body.Rotation);
+            return gun.Fire(Body.Position + GetDirection() * 0.46f, Body.Rotation);
         }
 
         public void ChangeGun(BaseGun gun)

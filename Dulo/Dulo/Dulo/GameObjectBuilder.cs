@@ -68,7 +68,7 @@ namespace Dulo
         {
             var bulletDefaultAnimation = CreateBulletDefaultAnimation();
 
-            var settingBullet = new SettingBullet(world, bulletDefaultAnimation.CurrentFrame, 5f, bulletDefaultAnimation, 
+            var settingBullet = new SettingBullet(world, bulletDefaultAnimation.CurrentFrame, 0.5f, bulletDefaultAnimation, 
                 null, null, null);
 
             return new DefaultGun(settingBullet);

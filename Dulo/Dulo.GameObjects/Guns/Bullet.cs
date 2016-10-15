@@ -16,12 +16,22 @@ namespace Dulo.GameObjects.Guns
 
         private readonly SettingBullet settingBaseAnimationModel;
 
+
         public Bullet(SettingBullet settingBullet, Vector2 startPosition, float startDirection) : base(settingBullet)
         {
             settingBaseAnimationModel = settingBullet;
 
             Body.Restitution = 1;
+            Body.FixedRotation = true;
+            Body.OnSeparation += Body_OnSeparation;
+
             Fire(startPosition, startDirection, settingBullet.Speed);
+        }
+
+        private void Body_OnSeparation(FarseerPhysics.Dynamics.Fixture fixtureA, FarseerPhysics.Dynamics.Fixture fixtureB)
+        {
+            var dir = Body.LinearVelocity;
+            Body.Rotation = (float)Math.Atan2(dir.Y, dir.X) + MathHelper.PiOver2;
         }
 
         public override void Update()

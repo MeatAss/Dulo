@@ -1,4 +1,6 @@
-﻿using Microsoft.Xna.Framework.Graphics;
+﻿using System.Threading;
+using System.Threading.Tasks;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using Dulo.InputModel;
 using Dulo.BasisModels;
@@ -21,8 +23,14 @@ namespace Dulo.GameObjects
 
         public float TurretSpeedRotation { get; set; }
 
+        public Vector2 Position
+        {
+            get { return tankBody.Position; }
 
-        public Tank(World world, TankBody tankBody, Turret turret, Track leftTrack, Track rightTrack,  KeyMap keyMap)
+            set { tankBody.Position = value; }
+        }
+
+        public Tank(World world, TankBody tankBody, Turret turret, Track leftTrack, Track rightTrack, KeyMap keyMap)
         {
             movingKeyMap = keyMap;
             shootingKeyMap = keyMap;
@@ -31,13 +39,13 @@ namespace Dulo.GameObjects
             this.turret = turret;
             this.leftTrack = leftTrack;
             this.rightTrack = rightTrack;
-            
+
             CreateRevoluteJointTurret(world, turret, new Vector2(0, 9.7f));
 
             float positionTrack = 36.5f;
             CreateWeldJointTrack(world, leftTrack, new Vector2(-positionTrack, 0f));
             CreateWeldJointTrack(world, rightTrack, new Vector2(positionTrack, 0f));
-            
+
             InitializeKeyListener();
         }
 
@@ -55,7 +63,6 @@ namespace Dulo.GameObjects
             var jointBodyTrack = new WeldJoint(tankBody.Body, track.Body, FarseerPhysics.ConvertUnits.ToSimUnits(position), Vector2.Zero);
 
             world.AddJoint(jointBodyTrack);
-            tankBody.Body.IgnoreCollisionWith(track.Body);
         }
 
         private void InitializeKeyListener()
@@ -66,11 +73,11 @@ namespace Dulo.GameObjects
             keyListener.Add(movingKeyMap.Left, () => tankBody.Rotate(-tankBody.SpeedRotating));
             keyListener.Add(movingKeyMap.Right, () => tankBody.Rotate(tankBody.SpeedRotating));
 
-            keyListener.Add(shootingKeyMap.Fire, turret.Fire);
+            keyListener.Add(shootingKeyMap.Fire, Fire);
         }
 
         public override void Draw(SpriteBatch canvas)
-        {        
+        {
             base.Draw(canvas);
 
             leftTrack.Draw(canvas);
@@ -90,5 +97,30 @@ namespace Dulo.GameObjects
             tankBody.Update();
             turret.Update();
         }
+
+        private void Fire()
+        {
+            var bullet = turret.Fire();
+
+            if (bullet == null)
+                return;
+
+            SetIgnorPhysicsTime(250, bullet.Body, leftTrack.Body, rightTrack.Body);
+        }
+
+        private void SetIgnorPhysicsTime(int lifetime, Body body, params Body[] targets)
+        {
+            foreach (var target in targets)
+                body.IgnoreCollisionWith(target);
+
+            Task.Factory.StartNew(() =>
+            {
+                Thread.Sleep(lifetime);
+
+                foreach (var target in targets)
+                    body.RestoreCollisionWith(target);
+            });
+        }
+
     }
 }
