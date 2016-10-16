@@ -59,7 +59,7 @@
     <Reference Include="System.Net" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ConditionAction.cs" />
+    <Compile Include="GameOperationAction.cs" />
     <Compile Include="InputSystem\ConcreteInputSystems\EnumValueModel.cs" />
     <Compile Include="InputSystem\ConcreteInputSystems\KeyboardInputSystem.cs" />
     <Compile Include="InputSystem\ConcreteInputSystems\KeyboardInputSystemMap.cs" />
@@ -68,9 +68,19 @@
     <Compile Include="InputSystem\ConcreteInputSystems\MouseKeysState.cs" />
     <Compile Include="InputSystem\IInput.cs" />
     <Compile Include="InputSystem\InputState.cs" />
+    <Compile Include="ManagerGameOperationAction.cs" />
     <Compile Include="KeyListener.cs" />
-    <Compile Include="KeyMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Dulo.BaseModels\Dulo.BaseModels.csproj">
+      <Project>{637ad84f-7c9b-480e-a43f-9c1c5d0a91a6}</Project>
+      <Name>Dulo.BaseModels</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Dulo.BasisModels\Dulo.BasisModels.csproj">
+      <Project>{4fee2fce-158f-481d-add6-e816f20f2d9f}</Project>
+      <Name>Dulo.BasisModels</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Microsoft\XNA Game Studio\Microsoft.Xna.GameStudio.targets" />

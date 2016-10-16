@@ -7,6 +7,13 @@ using System.Text;
 
 namespace Dulo.BaseModels
 {
+    public enum AnimationState
+    {
+        Play,
+        Stop,
+        Pause
+    }
+
     public class Animation : BaseBasis
     {
         public event Action OnAnimationEnded;
@@ -25,11 +32,13 @@ namespace Dulo.BaseModels
 
         public bool IsCyclicAnimation { get; set; } = false;
 
+        public bool IsReverse { get; set; } = false;
+
         private int currentFrameIndex = 0;
 
         private long beginTime;
 
-        private bool isPlaying = false;
+        private AnimationState currentState = AnimationState.Stop;
 
         public Animation()
         {
@@ -38,34 +47,48 @@ namespace Dulo.BaseModels
 
         public void Play()
         {
-            beginTime = DateTime.Now.ToMilliseconds();
-            isPlaying = true;
+            if (currentState == AnimationState.Play)
+                return;
+                    
+            if (currentState == AnimationState.Stop)    
+                beginTime = DateTime.Now.ToMilliseconds();
+
+            currentState = AnimationState.Play;
+
+            if (IsReverse && currentFrameIndex == 0)
+                currentFrameIndex = Frames.Count - 1;
+
+            if (!IsReverse && currentFrameIndex == Frames.Count - 1)
+                currentFrameIndex = 0;
         }
 
         public void Pause()
         {
-            isPlaying = false;
+            currentState = AnimationState.Pause;
         }
 
         public void Stop()
         {
-            isPlaying = false;
+            currentState = AnimationState.Stop;
             currentFrameIndex = 0;
         }
 
         public override void Update()
         {
-            if (!isPlaying)
+            if (currentState != AnimationState.Play)
                 return;
 
             if (DateTime.Now.ToMilliseconds() < beginTime + AnimationSpeed)
                 return;
             
-            currentFrameIndex = currentFrameIndex < Frames.Count-1 ? currentFrameIndex + 1 : 0;
+            if (!IsReverse)
+                currentFrameIndex = currentFrameIndex < Frames.Count-1 ? currentFrameIndex + 1 : 0;
+            else
+                currentFrameIndex = currentFrameIndex > 0 ? currentFrameIndex - 1 : Frames.Count - 1;
 
             beginTime = DateTime.Now.ToMilliseconds();
 
-            if (!IsCyclicAnimation && currentFrameIndex == 0)
+            if (!IsCyclicAnimation && ((!IsReverse && currentFrameIndex == 0) || (IsReverse && currentFrameIndex == Frames.Count - 1)))
                 EndAnimation();
         }
 

@@ -4,6 +4,11 @@ using Microsoft.Xna.Framework.Graphics;
 using Dulo.GameObjects;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics;
+using Dulo.InputModel;
+using System.Collections.Generic;
+using Dulo.InputModel.InputSystem.ConcreteInputSystems;
+using Microsoft.Xna.Framework.Input;
+using Dulo.InputModel.InputSystem;
 
 namespace Dulo
 {
@@ -20,6 +25,8 @@ namespace Dulo
         private Tank tank;
         private Tank tank1;
         private FrameCounter fps;
+
+        private KeyListener keyListener;
 
         private SpriteFont font;
 
@@ -41,6 +48,8 @@ namespace Dulo
             Components.Add(fps);
 
             InitialzeWorld();
+
+            keyListener = KeyListener.Create(new KeyboardWithMouseInputSystem(GetKeyboardInputWithMouseSystemMap()));
 
             tank = new GameObjectBuilder(world, View, Content).CreateDefaultTank();
 
@@ -72,7 +81,9 @@ namespace Dulo
         }
         
         protected override void Update(GameTime gameTime)
-        {            
+        {
+            keyListener.Update();
+
             tank.Update();
             tank1.Update();
 
@@ -91,6 +102,34 @@ namespace Dulo
             spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        private List<KeyboardInputWithMouseSystemMap> GetKeyboardInputWithMouseSystemMap()
+        {
+            var keyMap = new List<KeyboardInputWithMouseSystemMap>();
+
+            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.A, Operation = GameOperation.TurnLeft });
+            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.D, Operation = GameOperation.TurnRight });
+            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.W, Operation = GameOperation.MoveUp });
+            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.S, Operation = GameOperation.MoveDown });
+            keyMap.Add(new KeyboardInputWithMouseSystemMap { MouseKey = MouseKeys.LeftButton, Operation = GameOperation.Fire });
+
+            return keyMap;
+        }
+
+        private List<KeyboardInputSystemMap> GetKeyboardInputSystemMap()
+        {
+            var keyMap = new List<KeyboardInputSystemMap>();
+
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.A, Operation = GameOperation.TurnLeft });
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.D, Operation = GameOperation.TurnRight });
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.W, Operation = GameOperation.MoveUp });
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.S, Operation = GameOperation.MoveDown });
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.LeftShift, Operation = GameOperation.Fire });
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.Left, Operation = GameOperation.RotateTurretLeft });
+            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.Right, Operation = GameOperation.RotateTurretRight });
+
+            return keyMap;
         }
     }
 }

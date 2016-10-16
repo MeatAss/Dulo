@@ -12,6 +12,32 @@ namespace Dulo.BaseModels
 
         private string currentAnimationName = "";
 
+        public bool IsReverse
+        {
+            get
+            {
+                return animations[currentAnimationName].IsReverse;
+            }
+
+            set
+            {
+                animations[currentAnimationName].IsReverse = value;
+            }
+        }
+
+        public bool IsCyclicAnimation
+        {
+            get
+            {
+                return animations[currentAnimationName].IsCyclicAnimation;
+            }
+
+            set
+            {
+                animations[currentAnimationName].IsCyclicAnimation = value;
+            }
+        }
+
         protected BaseAnimationModel(World world, Texture2D physicalTextureMap, Animation defauleAnimation) : base(world, physicalTextureMap)
         {
             AddNewAnimation(defauleAnimation, "default");

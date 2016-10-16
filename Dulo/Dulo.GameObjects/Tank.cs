@@ -7,6 +7,7 @@ using Dulo.BasisModels;
 using Dulo.InputModel.InputSystem;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Dynamics.Joints;
+using System;
 
 namespace Dulo.GameObjects
 {
@@ -17,9 +18,10 @@ namespace Dulo.GameObjects
         private readonly Track leftTrack;
         private readonly Track rightTrack;
 
-        private KeyListener keyListener;
+        private ManagerGameOperationAction managerKeyDown;
+        private ManagerGameOperationAction managerKeyUp;
 
-        private readonly IInput input;
+        private readonly KeyListener input;
 
         public Vector2 Position
         {
@@ -28,14 +30,16 @@ namespace Dulo.GameObjects
             set { tankBody.Position = value; }
         }
 
-        public Tank(World world, TankBody tankBody, Turret turret, Track leftTrack, Track rightTrack, IInput input)
+        public Tank(World world, TankBody tankBody, Turret turret, Track leftTrack, Track rightTrack)
         {
             this.tankBody = tankBody;
             this.turret = turret;
             this.leftTrack = leftTrack;
             this.rightTrack = rightTrack;
 
-            this.input = input;
+            input = KeyListener.Sender;
+            input.OnKeyDown += Input_OnKeyDown;
+            input.OnKeyUp += Input_OnKeyUp;
 
             CreateRevoluteJointTurret(world, turret, new Vector2(0, 9.7f));
 
@@ -43,7 +47,18 @@ namespace Dulo.GameObjects
             CreateWeldJointTrack(world, leftTrack, new Vector2(-positionTrack, 0f));
             CreateWeldJointTrack(world, rightTrack, new Vector2(positionTrack, 0f));
 
-            InitializeKeyListener();
+            InitializeManagerKeyDown();
+            InitializeManagerKeyUp();
+        }
+
+        private void Input_OnKeyUp(GameOperation gameOperation)
+        {
+            managerKeyUp.Check(gameOperation);
+        }
+
+        private void Input_OnKeyDown(GameOperation gameOperation)
+        {
+            managerKeyDown.Check(gameOperation);
         }
 
         private void CreateRevoluteJointTurret(World world, Turret turret, Vector2 position)
@@ -62,18 +77,52 @@ namespace Dulo.GameObjects
             world.AddJoint(jointBodyTrack);
         }
 
-        private void InitializeKeyListener()
+        private void InitializeManagerKeyDown()
         {
-            keyListener = new KeyListener();
-            keyListener.Add(GameOperation.MoveUp, () => tankBody.MoveTo(tankBody.SpeedMoving));
-            keyListener.Add(GameOperation.MoveDown, () => tankBody.MoveTo(-tankBody.SpeedMoving * 0.6f));
-            keyListener.Add(GameOperation.TurnLeft, () => tankBody.Rotate(-tankBody.SpeedRotation));
-            keyListener.Add(GameOperation.TurnRight, () => tankBody.Rotate(tankBody.SpeedRotation));
+            managerKeyDown = new ManagerGameOperationAction();
 
-            keyListener.Add(GameOperation.RotateTurretLeft, () => turret.Rotate(-turret.SpeedRotation));
-            keyListener.Add(GameOperation.RotateTurretRight, () => turret.Rotate(turret.SpeedRotation));
+            managerKeyDown.Add(GameOperation.MoveUp, () => MoveUp());
+            managerKeyDown.Add(GameOperation.MoveDown, () => MoveDown());
+            managerKeyDown.Add(GameOperation.TurnLeft, () => tankBody.Rotate(-tankBody.SpeedRotation));
+            managerKeyDown.Add(GameOperation.TurnRight, () => tankBody.Rotate(tankBody.SpeedRotation));
 
-            keyListener.Add(GameOperation.Fire, Fire);
+            managerKeyDown.Add(GameOperation.RotateTurretLeft, () => turret.Rotate(-turret.SpeedRotation));
+            managerKeyDown.Add(GameOperation.RotateTurretRight, () => turret.Rotate(turret.SpeedRotation));
+
+            managerKeyDown.Add(GameOperation.Fire, Fire);
+        }
+
+        private void InitializeManagerKeyUp()
+        {
+            managerKeyUp = new ManagerGameOperationAction();
+
+            Action eventUpDown = () => {
+                leftTrack.AnimationPause();
+                rightTrack.AnimationPause();
+            };
+
+            managerKeyUp.Add(GameOperation.MoveUp, eventUpDown);
+            managerKeyUp.Add(GameOperation.MoveDown, eventUpDown);
+        }
+
+        private void MoveDown()
+        {
+            tankBody.MoveTo(-tankBody.SpeedMoving * 0.6f);
+
+            leftTrack.IsReverse = true;
+            rightTrack.IsReverse = true;
+            leftTrack.AnimationPlay();
+            rightTrack.AnimationPlay();            
+        }
+
+        private void MoveUp()
+        {
+            tankBody.MoveTo(tankBody.SpeedMoving);
+
+            leftTrack.IsReverse = false;
+            rightTrack.IsReverse = false;
+            leftTrack.AnimationPlay();
+            rightTrack.AnimationPlay();
         }
 
         public override void Draw(SpriteBatch canvas)
@@ -89,9 +138,7 @@ namespace Dulo.GameObjects
         public override void Update()
         {
             base.Update();
-
-            keyListener.Check(input.GetState());
-
+            
             leftTrack.Update();
             rightTrack.Update();
             tankBody.Update();
@@ -104,6 +151,8 @@ namespace Dulo.GameObjects
 
             if (bullet == null)
                 return;
+
+            turret.AnimationPlay();
 
             SetIgnorPhysicsTime(250, bullet.Body, leftTrack.Body, rightTrack.Body);
         }

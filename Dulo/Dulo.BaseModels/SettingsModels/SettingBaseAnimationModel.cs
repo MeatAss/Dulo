@@ -15,7 +15,6 @@ namespace Dulo.BaseModels.SettingsModels
         public SettingBaseAnimationModel(World world, Texture2D physicalTextureMap, Animation defaultAnimation) :  base(world, physicalTextureMap)
         {
             DefaultAnimation = defaultAnimation;
-            defaultAnimation.IsCyclicAnimation = true;
         }
     }
 }

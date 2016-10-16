@@ -27,5 +27,10 @@ namespace Dulo.InputModel.InputSystem
         {
             return keysPressed.Contains(gameOperation);
         }
+
+        public IEnumerable<GameOperation> GetPressedKeys()
+        {
+            return keysPressed;
+        }
     }
 }

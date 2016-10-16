@@ -30,47 +30,17 @@ namespace Dulo
         public Tank CreateDefaultTank()
         {
             //var keyMap = GetKeyboardInputSystemMap();
-            var keyMap = GetKeyboardInputWithMouseSystemMap();
+//            var keyMap = GetKeyboardInputWithMouseSystemMap();
 
             var tankBody = CreateTankBody();
             var turret = CreateTurret();
             var leftTrack = CreateTrack();
             var rightTrack = CreateTrack();
 
-            var tank = new Tank(world, tankBody, turret, leftTrack, rightTrack, new KeyboardWithMouseInputSystem(keyMap));
+            var tank = new Tank(world, tankBody, turret, leftTrack, rightTrack);
 
             return tank;
-        }
-
-        private List<KeyboardInputWithMouseSystemMap> GetKeyboardInputWithMouseSystemMap()
-        {
-            var keyMap = new List<KeyboardInputWithMouseSystemMap>();
-
-            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.A, Operation = GameOperation.TurnLeft });
-            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.D, Operation = GameOperation.TurnRight });
-            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.W, Operation = GameOperation.MoveUp });
-            keyMap.Add(new KeyboardInputWithMouseSystemMap { KeyboardKey = Keys.S, Operation = GameOperation.MoveDown });
-            keyMap.Add(new KeyboardInputWithMouseSystemMap { MouseKey = MouseKeys.LeftButton, Operation = GameOperation.Fire });
-            //keyMap.Add(new KeyboardInputWithMouseSystemMap { MouseKey = MouseKeys.XButton2, Operation = GameOperation.RotateTurretLeft });
-            //keyMap.Add(new KeyboardInputWithMouseSystemMap { MouseKey = MouseKeys.XButton1, Operation = GameOperation.RotateTurretRight });
-
-            return keyMap;
-        }
-
-        private List<KeyboardInputSystemMap> GetKeyboardInputSystemMap()
-        {
-            var keyMap = new List<KeyboardInputSystemMap>();
-
-            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.A, Operation = GameOperation.TurnLeft });
-            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.D, Operation = GameOperation.TurnRight });
-            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.W, Operation = GameOperation.MoveUp });
-            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.S, Operation = GameOperation.MoveDown });
-            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.LeftShift, Operation = GameOperation.Fire });
-            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.Left, Operation = GameOperation.RotateTurretLeft });
-            keyMap.Add(new KeyboardInputSystemMap { Key = Keys.Right, Operation = GameOperation.RotateTurretRight });
-
-            return keyMap;
-        }
+        }        
 
         private Track CreateTrack()
         {
@@ -78,17 +48,7 @@ namespace Dulo
             var settingTankBody = new SettingBaseAnimationModel(world, trackAnimation.CurrentFrame, trackAnimation);
 
             return new Track(settingTankBody);
-        }
-
-        private Animation CreateTrackDefaultAnimation()
-        {
-            var animation = new Animation();
-
-            for (var i = 0; i < 16; i++)
-                animation.Frames.Add(contentManager.Load<Texture2D>($"track/Track{i}"));
-
-            return animation;
-        }
+        }        
 
         private Turret CreateTurret()
         {
@@ -135,13 +95,27 @@ namespace Dulo
             return animation;
         }
 
+        private Animation CreateTrackDefaultAnimation()
+        {
+            var animation = new Animation();
+
+            for (var i = 0; i < 16; i++)
+                animation.Frames.Add(contentManager.Load<Texture2D>($"track/Track{i}"));
+
+            animation.IsCyclicAnimation = true;
+            animation.AnimationSpeed = 100;
+            return animation;
+        }
+
         private Animation CreateTurretDefaultAnimation()
         {
             var animation = new Animation();
 
             for (int i = 1; i < 13; i++)
                 animation.Frames.Add(contentManager.Load<Texture2D>($"gun1/{i}"));
-          
+
+            animation.AnimationSpeed = 1;
+            animation.IsCyclicAnimation = false;
             return animation;
         }
 

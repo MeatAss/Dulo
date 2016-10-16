@@ -26,7 +26,7 @@ namespace Dulo.GameObjects
             this.mouseProcessor = mouseProcessor;
 
             Body.Mass = 0.00000001f;
-            Body.AngularDamping = 15f;
+            Body.AngularDamping = 15f;            
         }
 
         public override void Update()
