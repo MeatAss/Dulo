@@ -25,9 +25,6 @@ namespace Dulo
 
         public Tank CreateDefaultTank()
         {
-            //var keyMap = GetKeyboardInputSystemMap();
-            //var keyMap = GetKeyboardInputWithMouseSystemMap();
-
             var tankBody = CreateTankBody();
             var turret = CreateTurret();
             var leftTrack = CreateTrack();

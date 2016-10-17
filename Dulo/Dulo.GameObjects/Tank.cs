@@ -43,7 +43,7 @@ namespace Dulo.GameObjects
 
         public void SetDefaultSettings()
         {
-            Collider.Body.Mass = 100;
+            Collider.Body.Mass = 100f;
 
             Turret.Body.Mass = 10f;
             Turret.SpeedRotation = 5f;
@@ -201,6 +201,8 @@ namespace Dulo.GameObjects
 
             LeftTrack.AnimationPause();
             PlayTrakAnimation(RightTrack, false);
+
+            Turret.SpeedRotation = 5 + TankBody.SpeedRotation;
         }
 
         public void PlayTrakAnimation(Track track, bool isRevers)

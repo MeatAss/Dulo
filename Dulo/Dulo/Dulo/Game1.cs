@@ -56,6 +56,8 @@ namespace Dulo
             wall = new GameObjectBuilder(world, View, Content).CreateWall();
 
             wall.Position = new Vector2(-122, -20);
+
+            //LabyrinthMap.AlaxText();
         }
 
         private void InitialzeWorld()
