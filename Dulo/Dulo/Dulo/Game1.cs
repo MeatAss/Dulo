@@ -23,12 +23,12 @@ namespace Dulo
         public Matrix SimView;
         public Matrix View;
         private Tank tank;
-        private Tank tank1;
         private FrameCounter fps;
 
         private KeyListener keyListener;
 
         private SpriteFont font;
+        private Wall wall;
 
         public Game1()
         {
@@ -53,9 +53,9 @@ namespace Dulo
 
             tank = new GameObjectBuilder(world, View, Content).CreateDefaultTank();
 
-            tank1 = new GameObjectBuilder(world, View, Content).CreateDefaultTank();
+            wall = new GameObjectBuilder(world, View, Content).CreateWall();
 
-            tank1.Position = new Vector2(-200, -200);
+            wall.Position = new Vector2(-122, -20);
         }
 
         private void InitialzeWorld()
@@ -63,7 +63,7 @@ namespace Dulo
             View = Matrix.Identity;
 
             Matrix matRotation = Matrix.CreateRotationZ(0);
-            Matrix matZoom = Matrix.CreateScale(1f);
+            Matrix matZoom = Matrix.CreateScale(2f);
 
             Vector3 translateCenter = new Vector3(new Vector2(ConvertUnits.ToSimUnits(GraphicsDevice.Viewport.Width / 2f), ConvertUnits.ToSimUnits(GraphicsDevice.Viewport.Height / 2f)), 0f);
 
@@ -85,7 +85,7 @@ namespace Dulo
             keyListener.Update();
 
             tank.Update();
-            tank1.Update();
+            wall.Update();
 
             world.Step(Math.Min((float)gameTime.ElapsedGameTime.TotalSeconds, (1f / 30f)));
             base.Update(gameTime);
@@ -98,7 +98,7 @@ namespace Dulo
 
             spriteBatch.Begin(0, null, null, null, null, null, View);
             tank.Draw(spriteBatch);
-            tank1.Draw(spriteBatch);
+            wall.Draw(spriteBatch);
             spriteBatch.End();
 
             base.Draw(gameTime);

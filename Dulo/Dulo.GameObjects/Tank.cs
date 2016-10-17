@@ -13,42 +13,107 @@ namespace Dulo.GameObjects
 {
     public class Tank : BaseBasis
     {
-        private readonly Turret turret;
-        private readonly TankBody tankBody;
-        private readonly Track leftTrack;
-        private readonly Track rightTrack;
+        public Turret Turret;
+        public TankBody TankBody;
+        public Track LeftTrack;
+        public Track RightTrack;
+        public TankCollider Collider;
 
         private ManagerGameOperationAction managerKeyDown;
         private ManagerGameOperationAction managerKeyUp;
 
-        private readonly KeyListener input;
 
         public Vector2 Position
         {
-            get { return tankBody.Position; }
+            get { return TankBody.Position; }
 
-            set { tankBody.Position = value; }
+            set { TankBody.Position = value; }
         }
 
-        public Tank(World world, TankBody tankBody, Turret turret, Track leftTrack, Track rightTrack)
+        public Tank(World world, TankCollider tankCollider, TankBody tankBody, Turret turret, Track leftTrack, Track rightTrack)
         {
-            this.tankBody = tankBody;
-            this.turret = turret;
-            this.leftTrack = leftTrack;
-            this.rightTrack = rightTrack;
+            InitializeVaribles(tankCollider, tankBody, turret, leftTrack, rightTrack);
+            InitializeInputSystem();
 
-            input = KeyListener.Sender;
-            input.OnKeyDown += Input_OnKeyDown;
-            input.OnKeyUp += Input_OnKeyUp;
-
-            CreateRevoluteJointTurret(world, turret, new Vector2(0, 9.7f));
-
-            float positionTrack = 36.5f;
-            CreateWeldJointTrack(world, leftTrack, new Vector2(-positionTrack, 0f));
-            CreateWeldJointTrack(world, rightTrack, new Vector2(positionTrack, 0f));
+            BuildTank(world);
 
             InitializeManagerKeyDown();
             InitializeManagerKeyUp();
+        }
+
+        public void SetDefaultSettings()
+        {
+            Collider.Body.Mass = 100;
+
+            Turret.Body.Mass = 10f;
+            Turret.SpeedRotation = 5f;
+            Turret.Body.AngularDamping = 50f;
+
+            TankBody.SpeedMoving = 600f;
+            TankBody.SpeedRotation = 7f;
+            TankBody.LinearDamping = 30f;
+            TankBody.AngularDamping = 80f;
+        }
+
+        public override void Draw(SpriteBatch canvas)
+        {
+            base.Draw(canvas);
+            LeftTrack.Draw(canvas);
+            RightTrack.Draw(canvas);
+            TankBody.Draw(canvas);
+            Turret.Draw(canvas);
+        }
+
+        public override void Update()
+        {
+            base.Update();
+
+            LeftTrack.Update();
+            RightTrack.Update();
+            TankBody.Update();
+            Turret.Update();
+        }
+
+        private void InitializeVaribles(TankCollider tankCollider, TankBody tankBody, Turret turret, Track leftTrack, Track rightTrack)
+        {
+            Collider = tankCollider;
+            TankBody = tankBody;
+            Turret = turret;
+            LeftTrack = leftTrack;
+            RightTrack = rightTrack;
+        }
+
+        private void InitializeInputSystem()
+        {
+            var input = KeyListener.Sender;
+            input.OnKeyDown += Input_OnKeyDown;
+            input.OnKeyUp += Input_OnKeyUp;
+        }
+
+        private void BuildTank(World world)
+        {
+            CreateRevoluteJointTurret(world, Turret, new Vector2(0, 9.7f));
+
+            float positionTrack = 36.5f;
+
+            DisableCollisionForVisibleObject();
+
+            CreateWeldJoint(world, Collider.Body, LeftTrack.Body, new Vector2(-positionTrack, 0f), Vector2.Zero);
+            CreateWeldJoint(world, Collider.Body, RightTrack.Body, new Vector2(positionTrack, 0f), Vector2.Zero);
+
+            CreateWeldJoint(world, Collider.Body, TankBody.Body, Vector2.Zero, Vector2.Zero);
+        }
+
+        private void DisableCollisionForVisibleObject()
+        {
+            LeftTrack.Body.CollisionCategories = Category.None;
+            RightTrack.Body.CollisionCategories = Category.None;
+            TankBody.Body.CollisionCategories = Category.None;
+
+            Turret.Body.IgnoreCollisionWith(LeftTrack.Body);
+            Turret.Body.IgnoreCollisionWith(RightTrack.Body);
+            Turret.Body.IgnoreCollisionWith(TankBody.Body);
+            Turret.Body.IgnoreCollisionWith(Collider.Body);
         }
 
         private void Input_OnKeyUp(GameOperation gameOperation)
@@ -63,16 +128,15 @@ namespace Dulo.GameObjects
 
         private void CreateRevoluteJointTurret(World world, Turret turret, Vector2 position)
         {
-            var jointBodyTurret = new RevoluteJoint(tankBody.Body, turret.Body, FarseerPhysics.ConvertUnits.ToSimUnits(position));
+            var jointBodyTurret = new RevoluteJoint(Collider.Body, turret.Body, FarseerPhysics.ConvertUnits.ToSimUnits(position));
 
             jointBodyTurret.LocalAnchorA -= FarseerPhysics.ConvertUnits.ToSimUnits(position);
             world.AddJoint(jointBodyTurret);
-            tankBody.Body.IgnoreCollisionWith(turret.Body);
         }
 
-        private void CreateWeldJointTrack(World world, Track track, Vector2 position)
+        private void CreateWeldJoint(World world, Body bodyA, Body bodyB, Vector2 positionA, Vector2 positionB)
         {
-            var jointBodyTrack = new WeldJoint(tankBody.Body, track.Body, FarseerPhysics.ConvertUnits.ToSimUnits(position), Vector2.Zero);
+            var jointBodyTrack = new WeldJoint(bodyA, bodyB, FarseerPhysics.ConvertUnits.ToSimUnits(positionA), FarseerPhysics.ConvertUnits.ToSimUnits(positionB));
 
             world.AddJoint(jointBodyTrack);
         }
@@ -81,13 +145,13 @@ namespace Dulo.GameObjects
         {
             managerKeyDown = new ManagerGameOperationAction();
 
-            managerKeyDown.Add(GameOperation.MoveUp, () => MoveUp());
-            managerKeyDown.Add(GameOperation.MoveDown, () => MoveDown());
-            managerKeyDown.Add(GameOperation.TurnLeft, () => tankBody.Rotate(-tankBody.SpeedRotation));
-            managerKeyDown.Add(GameOperation.TurnRight, () => tankBody.Rotate(tankBody.SpeedRotation));
+            managerKeyDown.Add(GameOperation.MoveUp, MoveUp);
+            managerKeyDown.Add(GameOperation.MoveDown, MoveDown);
+            managerKeyDown.Add(GameOperation.TurnLeft, TurnLeft);
+            managerKeyDown.Add(GameOperation.TurnRight, TurnRight);
 
-            managerKeyDown.Add(GameOperation.RotateTurretLeft, () => turret.Rotate(-turret.SpeedRotation));
-            managerKeyDown.Add(GameOperation.RotateTurretRight, () => turret.Rotate(turret.SpeedRotation));
+            managerKeyDown.Add(GameOperation.RotateTurretLeft, () => Turret.Rotate(-Turret.SpeedRotation));
+            managerKeyDown.Add(GameOperation.RotateTurretRight, () => Turret.Rotate(Turret.SpeedRotation));
 
             managerKeyDown.Add(GameOperation.Fire, Fire);
         }
@@ -97,64 +161,64 @@ namespace Dulo.GameObjects
             managerKeyUp = new ManagerGameOperationAction();
 
             Action eventUpDown = () => {
-                leftTrack.AnimationPause();
-                rightTrack.AnimationPause();
+                LeftTrack.AnimationPause();
+                RightTrack.AnimationPause();
             };
 
             managerKeyUp.Add(GameOperation.MoveUp, eventUpDown);
             managerKeyUp.Add(GameOperation.MoveDown, eventUpDown);
+            managerKeyUp.Add(GameOperation.TurnLeft, eventUpDown);
+            managerKeyUp.Add(GameOperation.TurnRight, eventUpDown);
         }
 
         private void MoveDown()
         {
-            tankBody.MoveTo(-tankBody.SpeedMoving * 0.6f);
+            Collider.MoveTo(-TankBody.SpeedMoving * 0.6f);
 
-            leftTrack.IsReverse = true;
-            rightTrack.IsReverse = true;
-            leftTrack.AnimationPlay();
-            rightTrack.AnimationPlay();            
+            PlayTrakAnimation(LeftTrack, true);
+            PlayTrakAnimation(RightTrack, true);
         }
 
         private void MoveUp()
         {
-            tankBody.MoveTo(tankBody.SpeedMoving);
+            Collider.MoveTo(TankBody.SpeedMoving);
 
-            leftTrack.IsReverse = false;
-            rightTrack.IsReverse = false;
-            leftTrack.AnimationPlay();
-            rightTrack.AnimationPlay();
+            PlayTrakAnimation(LeftTrack, false);
+            PlayTrakAnimation(RightTrack, false);
         }
 
-        public override void Draw(SpriteBatch canvas)
+        private void TurnRight()
         {
-            base.Draw(canvas);
+            Collider.Rotate(TankBody.SpeedRotation);
 
-            leftTrack.Draw(canvas);
-            rightTrack.Draw(canvas);
-            tankBody.Draw(canvas);
-            turret.Draw(canvas);
+            RightTrack.AnimationPause();
+            PlayTrakAnimation(LeftTrack, false);
         }
 
-        public override void Update()
+        private void TurnLeft()
         {
-            base.Update();
-            
-            leftTrack.Update();
-            rightTrack.Update();
-            tankBody.Update();
-            turret.Update();
+            Collider.Rotate(-TankBody.SpeedRotation);
+
+            LeftTrack.AnimationPause();
+            PlayTrakAnimation(RightTrack, false);
+        }
+
+        public void PlayTrakAnimation(Track track, bool isRevers)
+        {
+            track.IsReverse = isRevers;
+            track.AnimationPlay();
         }
 
         private void Fire()
         {
-            var bullet = turret.Fire();
+            var bullet = Turret.Fire();
 
             if (bullet == null)
                 return;
 
-            turret.AnimationPlay();
+            Turret.AnimationPlay();
 
-            SetIgnorPhysicsTime(250, bullet.Body, leftTrack.Body, rightTrack.Body);
+            SetIgnorPhysicsTime(250, bullet.Body, Collider.Body);
         }
 
         private void SetIgnorPhysicsTime(int lifetime, Body body, params Body[] targets)

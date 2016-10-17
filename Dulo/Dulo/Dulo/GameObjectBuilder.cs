@@ -1,16 +1,12 @@
-﻿using System.Collections.Generic;
-using Dulo.GameObjects;
+﻿using Dulo.GameObjects;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Dulo.BaseModels;
 using Dulo.BaseModels.SettingsModels;
 using Dulo.GameObjects.Guns;
 using Dulo.GameObjects.SettingsModels;
-using Dulo.InputModel.InputSystem;
-using Dulo.InputModel.InputSystem.ConcreteInputSystems;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Input;
 
 namespace Dulo
 {
@@ -30,22 +26,33 @@ namespace Dulo
         public Tank CreateDefaultTank()
         {
             //var keyMap = GetKeyboardInputSystemMap();
-//            var keyMap = GetKeyboardInputWithMouseSystemMap();
+            //var keyMap = GetKeyboardInputWithMouseSystemMap();
 
             var tankBody = CreateTankBody();
             var turret = CreateTurret();
             var leftTrack = CreateTrack();
             var rightTrack = CreateTrack();
+            var tankcollidet = CreateTankCollider();
 
-            var tank = new Tank(world, tankBody, turret, leftTrack, rightTrack);
+            var tank = new Tank(world, tankcollidet, tankBody, turret, leftTrack, rightTrack);
+
+            tank.SetDefaultSettings();
 
             return tank;
-        }        
+        }
+
+        private TankCollider CreateTankCollider()
+        {
+            var settingTank = new SettingBaseModel(world, contentManager.Load<Texture2D>($"tank/Tank1"));
+
+            return new TankCollider(settingTank);
+        }
 
         private Track CreateTrack()
         {
             var trackAnimation = CreateTrackDefaultAnimation();
             var settingTankBody = new SettingBaseAnimationModel(world, trackAnimation.CurrentFrame, trackAnimation);
+
 
             return new Track(settingTankBody);
         }        
@@ -75,12 +82,18 @@ namespace Dulo
 
             var tankBody = new TankBody(settingTankBody);
 
-            tankBody.SpeedMoving = 300f;
-            tankBody.SpeedRotation = 7f;
-            tankBody.LinearDamping = 5f;
-            tankBody.AngularDamping = 18f;
-
             return tankBody;
+        }
+
+        public Wall CreateWall()
+        {
+            var animation = CreateWallDefaultAnimation();
+
+            var wall = new Wall(new SettingWall(world, animation.CurrentFrame, animation));
+
+
+
+            return wall;
         }
 
         private Animation CreateTankBodyDefaultAnimation()
@@ -90,7 +103,7 @@ namespace Dulo
             //for (var i = 0; i < 14; i++)
             //    animation.Frames.Add(contentManager.Load<Texture2D>($"tank/Tank{i}"));
 
-            animation.Frames.Add(contentManager.Load<Texture2D>($"tankBody/TankBody"));
+            animation.Frames.Add(contentManager.Load<Texture2D>($"TankBody/TankBody"));
 
             return animation;
         }
@@ -124,6 +137,15 @@ namespace Dulo
             var animation = new Animation();
 
             animation.Frames.Add(contentManager.Load<Texture2D>("bullets/bullet"));
+
+            return animation;
+        }
+
+        private Animation CreateWallDefaultAnimation()
+        {
+            var animation = new Animation();
+
+            animation.Frames.Add(contentManager.Load<Texture2D>("walls/wall"));
 
             return animation;
         }

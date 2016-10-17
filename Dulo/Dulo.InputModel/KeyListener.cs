@@ -1,9 +1,7 @@
 ﻿using Dulo.BasisModels;
 using Dulo.InputModel.InputSystem;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace Dulo.InputModel
 {
@@ -14,47 +12,38 @@ namespace Dulo.InputModel
         public event InputAction OnKeyDown;
         public event InputAction OnKeyUp;
 
-        private IEnumerable<GameOperation> currentKeysState;
+        private List<GameOperation> currentKeysState;
 
-        private static KeyListener sender;
+        public static KeyListener Sender { get; private set; }
 
         public IInput Input { get; set; }   
-        
-        public static KeyListener Sender
-        {
-            get
-            {
-                return sender;
-            }
-        }     
+          
 
         private KeyListener(IInput input)
         {
             Input = input;
 
-            currentKeysState = input.GetState().GetPressedKeys();
+            currentKeysState = input.GetState().GetPressedKeys().ToList();
         }
 
         public static KeyListener Create(IInput input)
         {
-            if (sender == null)
-                sender = new KeyListener(input);
+            Sender = Sender ?? new KeyListener(input);
 
-            return sender;
+            return Sender;
         }
 
         public override void Update()
         {
-            var newState = Input.GetState().GetPressedKeys();
+            var newState = Input.GetState().GetPressedKeys().ToList();
 
             InvokeOnKeyDown(newState);
-
             InvokeOnKeyUp(newState);
 
             currentKeysState = newState;
         }
 
-        private void InvokeOnKeyDown(IEnumerable<GameOperation> gameOperation)
+        private void InvokeOnKeyDown(List<GameOperation> gameOperation)
         {
             foreach (var state in gameOperation)
             {
@@ -62,23 +51,17 @@ namespace Dulo.InputModel
             }
         }
 
-        private void InvokeOnKeyUp(IEnumerable<GameOperation> gameOperation)
+        private void InvokeOnKeyUp(List<GameOperation> newState)
         {
-            //currentKeysState
-            //    .ToList()
-            //    .ForEach(state =>
-            //    {
-            //        if (gameOperation.Contains(state) == false)
-            //            OnKeyUp?.Invoke(state);
-            //    });
-            if (gameOperation.Count() == 0)
+            if (newState.Count == 0)
                  currentKeysState.ToList().ForEach(x => OnKeyUp?.Invoke(x));
-
-            foreach (var state in currentKeysState)
-            {
-                if (gameOperation.Where(x => x == state).Count() == 0 )
-                    OnKeyUp?.Invoke(state);
-            }
+            
+            currentKeysState
+                .ForEach(state =>
+                {
+                    if (newState.Contains(state) == false)
+                        OnKeyUp?.Invoke(state);
+                });
         }
     }
 }

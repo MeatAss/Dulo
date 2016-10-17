@@ -65,10 +65,13 @@
     <Compile Include="MouseProcessor.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SettingsModels\SettingBullet.cs" />
+    <Compile Include="SettingsModels\SettingWall.cs" />
     <Compile Include="Tank.cs" />
     <Compile Include="TankBody.cs" />
+    <Compile Include="TankCollider.cs" />
     <Compile Include="Track.cs" />
     <Compile Include="Turret.cs" />
+    <Compile Include="Wall.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dulo.BaseModels\Dulo.BaseModels.csproj">
